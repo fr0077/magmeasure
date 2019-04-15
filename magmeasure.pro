@@ -26,10 +26,18 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    session.cpp \
+    probe.cpp \
+    manager.cpp \
+    actuator.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    session.h \
+    probe.h \
+    manager.h \
+    actuator.h
 
 FORMS += \
         mainwindow.ui

@@ -2,10 +2,10 @@
 #define SESSION_H
 
 
-class session
+class Session
 {
 public:
-    session();
+    Session();
 };
 
 #endif // SESSION_H

@@ -1,6 +1,6 @@
 #include "session.h"
 
-session::session()
+Session::Session()
 {
 
 }
