@@ -57,3 +57,6 @@ RESOURCES += \
 
 # INCLUDEPATH += "/usr/local/Cellar/boost/1.69.0/include"
 
+DISTFILES += \
+    settings.ini
+
