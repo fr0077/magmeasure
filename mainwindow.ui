@@ -254,9 +254,21 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>81</width>
+                 <width>201</width>
                  <height>16</height>
                 </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="autoFillBackground">
+                <bool>false</bool>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background: orange</string>
                </property>
                <property name="text">
                 <string>磁場[G]</string>
@@ -306,12 +318,21 @@
                 <rect>
                  <x>0</x>
                  <y>40</y>
-                 <width>59</width>
+                 <width>201</width>
                  <height>16</height>
                 </rect>
                </property>
+               <property name="font">
+                <font>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background: orange</string>
+               </property>
                <property name="text">
-                <string>位置[mm]</string>
+                <string>測定位置[mm]</string>
                </property>
               </widget>
               <widget class="QLabel" name="label_10">
@@ -357,20 +378,29 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>80</y>
-                 <width>59</width>
+                 <y>160</y>
+                 <width>201</width>
                  <height>16</height>
                 </rect>
                </property>
+               <property name="font">
+                <font>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background: orange</string>
+               </property>
                <property name="text">
-                <string>測定点</string>
+                <string>セッションの測定点</string>
                </property>
               </widget>
               <widget class="QLabel" name="label_14">
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>100</y>
+                 <y>180</y>
                  <width>59</width>
                  <height>16</height>
                 </rect>
@@ -383,7 +413,7 @@
                <property name="geometry">
                 <rect>
                  <x>70</x>
-                 <y>100</y>
+                 <y>180</y>
                  <width>59</width>
                  <height>16</height>
                 </rect>
@@ -396,13 +426,109 @@
                <property name="geometry">
                 <rect>
                  <x>80</x>
-                 <y>100</y>
+                 <y>180</y>
                  <width>59</width>
                  <height>16</height>
                 </rect>
                </property>
                <property name="text">
                 <string>3000</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_17">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>120</y>
+                 <width>201</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background: orange</string>
+               </property>
+               <property name="text">
+                <string>アクチュエーターの状態</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_18">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>140</y>
+                 <width>201</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>FF</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_19">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>80</y>
+                 <width>201</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background: orange</string>
+               </property>
+               <property name="text">
+                <string>アクチュエーター位置</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_20">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>100</y>
+                 <width>59</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>130</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_21">
+               <property name="geometry">
+                <rect>
+                 <x>140</x>
+                 <y>100</y>
+                 <width>59</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>531</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_22">
+               <property name="geometry">
+                <rect>
+                 <x>70</x>
+                 <y>100</y>
+                 <width>59</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>140</string>
                </property>
               </widget>
              </widget>
@@ -667,6 +793,17 @@
             </property>
             <property name="text">
              <string>ノート</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolButton">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="magmeasure-resources.qrc">
+              <normaloff>:/icons/star.png</normaloff>:/icons/star.png</iconset>
             </property>
            </widget>
           </item>

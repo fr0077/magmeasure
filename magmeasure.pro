@@ -26,16 +26,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    group3_probe.cpp \
     lakeshore_probe.cpp \
         main.cpp \
         mainwindow.cpp \
     session.cpp \
     manager.cpp \
-    log.cpp \
     thk_actuator.cpp
 
 HEADERS += \
         mainwindow.h \
+    note.h \
     session.h \
     probe.h \
     manager.h \
@@ -43,7 +44,8 @@ HEADERS += \
     log.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+        simple_controler.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
