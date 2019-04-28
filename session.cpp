@@ -4,3 +4,7 @@ Session::Session()
 {
 
 }
+
+void Session::close(){
+
+}

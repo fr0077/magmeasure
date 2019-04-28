@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,19 +26,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    lakeshore_probe.cpp \
         main.cpp \
         mainwindow.cpp \
     session.cpp \
-    probe.cpp \
     manager.cpp \
-    actuator.cpp
+    actuator.cpp \
+    thk_actuator.cpp \
+    log.cpp
 
 HEADERS += \
         mainwindow.h \
     session.h \
     probe.h \
     manager.h \
-    actuator.h
+    actuator.h \
+    log.h
 
 FORMS += \
         mainwindow.ui
@@ -49,3 +53,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     magmeasure-resources.qrc
+
+# INCLUDEPATH += "/usr/local/Cellar/boost/1.69.0/include"
+

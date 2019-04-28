@@ -1,6 +1,5 @@
 #include "actuator.h"
 
-Actuator::Actuator()
-{
+class THK_actuator : public Actuator{
 
-}
+};

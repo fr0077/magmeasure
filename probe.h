@@ -5,20 +5,29 @@
 class Probe
 {
 public:
-    Probe();
-    //ホールプローブを初期化する
-    //戻り値：成功なら0、失敗ならそれ以外
-    //すでに初期化済みであってもこの関数を呼び出しても問題ないようにする
-    int initialize();
+    enum ProbeAxis{
+      PROBE_AXIS_X,PROBE_AXIS_Y,PROBE_AXIS_Z
+    };
+
+    enum ProbeErrorType{
+        //プローブはコマンドを正常に実行した
+        COMMAND_SUCCESS = 0,
+        //プローブがコマンド実行失敗を返した
+        COMMAND_FAILED,
+        //プローブからコマンドに対し応答がない
+        TIMED_OUT,
+    };
+
+    //プローブを初期化する
+    ProbeErrorType initialize();
 
     //ホールプローブをゼロリセットする
-    //戻り値：成功なら0、失敗ならそれ以外
-    int setZero();
+    ProbeErrorType setZero(ProbeAxis axis);
 
     //ホールプローブの値
     typedef struct {
       //成功なら0、失敗ならそれ以外
-      int status;
+      ProbeErrorType status;
       //3軸の値
       double x,y,z;
     }Value;
