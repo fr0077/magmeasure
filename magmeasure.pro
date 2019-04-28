@@ -31,9 +31,8 @@ SOURCES += \
         mainwindow.cpp \
     session.cpp \
     manager.cpp \
-    actuator.cpp \
-    thk_actuator.cpp \
-    log.cpp
+    log.cpp \
+    thk_actuator.cpp
 
 HEADERS += \
         mainwindow.h \

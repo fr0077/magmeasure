@@ -1,5 +1,5 @@
 #include "actuator.h"
 
-class THK_actuator : public Actuator{
+class THK_Actuator : public Actuator{
 
 };
