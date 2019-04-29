@@ -26,6 +26,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    dummy_actuator.cpp \
+    dummy_probe.cpp \
     group3_probe.cpp \
     lakeshore_probe.cpp \
         main.cpp \
@@ -55,8 +57,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     magmeasure-resources.qrc
 
-# INCLUDEPATH += "/usr/local/Cellar/boost/1.69.0/include"
+INCLUDEPATH += "/usr/local/Cellar/boost/1.69.0_2/include"
 
 DISTFILES += \
+    sessions.ini \
     settings.ini
 

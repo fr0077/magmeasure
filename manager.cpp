@@ -27,7 +27,7 @@ void Manager::closeSession(){
 Session* Manager::newSession(){
     if(isSessionRunning())
         throw "Sesseion already running";
-    Session* session = new Session;
+    Session* session = new Session("test");
     sessions->push_back(session);
     currentSession = session;
     return session;

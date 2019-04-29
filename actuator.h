@@ -12,6 +12,8 @@ public:
         limits.zmax = zmax;
     }
 
+    virtual ~Actuator(){}
+
     typedef struct{
         int xmax, ymax, zmax;
     }Limits;
@@ -34,7 +36,7 @@ public:
     };
 
     //アラームをリセットする
-    virtual Actuator_Error_Type reset_alarm(ActuatorAxis axis) = 0;
+    virtual Actuator_Error_Type resetAlarm(ActuatorAxis axis) = 0;
 
     typedef struct{
         Actuator_Error_Type errType;

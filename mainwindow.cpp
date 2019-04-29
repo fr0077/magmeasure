@@ -44,3 +44,8 @@ void MainWindow::on_button_session_abort_clicked()
     }
     return;
 }
+
+void MainWindow::on_button_session_start_clicked()
+{
+
+}
