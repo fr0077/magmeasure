@@ -9,6 +9,8 @@ public:
       PROBE_AXIS_X,PROBE_AXIS_Y,PROBE_AXIS_Z
     };
 
+    virtual ~Probe();
+
     enum ProbeErrorType{
         //プローブはコマンドを正常に実行した
         COMMAND_SUCCESS = 0,
@@ -19,10 +21,10 @@ public:
     };
 
     //プローブを初期化する
-    ProbeErrorType initialize();
+    virtual ProbeErrorType initialize() = 0;
 
     //ホールプローブをゼロリセットする
-    ProbeErrorType setZero(ProbeAxis axis);
+    virtual ProbeErrorType setZero(ProbeAxis axis) = 0;
 
     //ホールプローブの値
     typedef struct {
@@ -30,10 +32,10 @@ public:
       ProbeErrorType status;
       //3軸の値
       double x,y,z;
-    }Value;
+    }ProbeValue;
 
     //プローブの値を出力する
-    Value getValue();
+    virtual ProbeValue getValue() = 0;
 };
 
 #endif // PROBE_H

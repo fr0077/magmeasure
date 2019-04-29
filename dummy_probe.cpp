@@ -11,8 +11,8 @@ public:
         return COMMAND_SUCCESS;
     }
 
-    Value getValue(){
-        Value v;
+    ProbeValue getValue(){
+        ProbeValue v;
         v.x = 0;
         v.y = 0;
         v.z = 0;

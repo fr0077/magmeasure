@@ -324,7 +324,7 @@
                 <string>531</string>
                </property>
               </widget>
-              <widget class="QLabel" name="point_measuring">
+              <widget class="QLabel" name="commands_finished">
                <property name="geometry">
                 <rect>
                  <x>0</x>
@@ -337,7 +337,7 @@
                 <string>0</string>
                </property>
               </widget>
-              <widget class="QLabel" name="label_point_slash">
+              <widget class="QLabel" name="label_command_slash">
                <property name="geometry">
                 <rect>
                  <x>70</x>
@@ -350,7 +350,7 @@
                 <string>/</string>
                </property>
               </widget>
-              <widget class="QLabel" name="point_total">
+              <widget class="QLabel" name="commands_total">
                <property name="geometry">
                 <rect>
                  <x>90</x>
