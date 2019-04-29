@@ -33,21 +33,20 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     session.cpp \
-    manager.cpp \
+    session_manager.cpp \
     thk_actuator.cpp
 
 HEADERS += \
         mainwindow.h \
-    note.h \
     session.h \
     probe.h \
-    manager.h \
     actuator.h \
-    log.h
+    log.h \
+    session_manager.h
 
 FORMS += \
         mainwindow.ui \
-        simple_controler.ui
+        session_select_dialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

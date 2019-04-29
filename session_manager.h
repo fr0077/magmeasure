@@ -2,23 +2,24 @@
 #define MANAGER_H
 
 #include "session.h"
+#include <QMainWindow>
+#include <QLabel>
 #include "probe.h"
 #include <ctime>
 #include <vector>
 
-class Manager
+class SessionManager
 {
 private:
-    std::vector<Session*>* sessions;
     Session* currentSession;
+    QMainWindow *mw;
 
 public:
-    Manager();
+    SessionManager(QMainWindow *mw);
 
     bool isSessionRunning();
     Session* getCurrentSession();
     Session* newSession();
-    std::vector<Session> getSessionList();
     void closeSession();
 
     void setActuatorErrorStatus(char status);

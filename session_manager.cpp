@@ -1,34 +1,32 @@
-#include "manager.h"
+#include "session_manager.h"
 
-Manager::Manager()
+SessionManager::SessionManager(QMainWindow *mw)
 {
-    sessions = new std::vector<Session*>;
     currentSession = nullptr;
+    this->mw = mw;
+    QLabel *ql = mw->findChild<QLabel *>("session_name", Qt::FindChildrenRecursively);
+    ql->setText("Set!");
 }
 
-Session* Manager::getCurrentSession(){
-    if(!isSessionRunning()){
-        return nullptr;
-    }
+Session* SessionManager::getCurrentSession(){
     return currentSession;
 }
 
-bool Manager::isSessionRunning(){
+bool SessionManager::isSessionRunning(){
     return currentSession != nullptr;
 }
 
-void Manager::closeSession(){
+void SessionManager::closeSession(){
     if(isSessionRunning()){
         currentSession->close();
     }
     currentSession = nullptr;
 }
 
-Session* Manager::newSession(){
+Session* SessionManager::newSession(){
     if(isSessionRunning())
         throw "Sesseion already running";
     Session* session = new Session("test");
-    sessions->push_back(session);
     currentSession = session;
     return session;
 }

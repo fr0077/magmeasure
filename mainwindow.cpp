@@ -6,12 +6,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    manager = new Manager;
+    manager = new SessionManager(this);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete manager;
 }
 
 void MainWindow::on_button_session_create_clicked()

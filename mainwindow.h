@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "manager.h"
+#include "session_manager.h"
 #include <QDebug>
 #include <QMessageBox>
 
@@ -28,7 +28,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    Manager *manager;
+    SessionManager *manager;
 };
 
 #endif // MAINWINDOW_H
