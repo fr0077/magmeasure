@@ -5,6 +5,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <string>
 #include <ctime>
+#include <boost/lexical_cast.hpp>
 
 class Log
 {
@@ -13,10 +14,15 @@ public:
     enum LogLevel{
         FATAL,WARN,INFO,VERBOSE
     };
-    Log(LogLevel loglevel, Session session, std::time_t time, std::string message){
+    Log(LogLevel loglevel, Session *session, std::time_t time, std::string message){
         this->loglevel = loglevel;
-        this->session_name = session.getName();
-        this->session_uuid = session.id;
+        if(session != nullptr){
+            this->session_name = session->getName();
+            this->session_uuid = session->id;
+        }else{
+            this->session_name = "-";
+            this->session_uuid = "-";
+        }
 
         this->message = message;
         this->time = time;
@@ -24,7 +30,7 @@ public:
 private:
     LogLevel loglevel;
     std::string session_name;
-    boost::uuids::uuid session_uuid;
+    std::string session_uuid;
     std::string message;
     std::time_t time;
 };

@@ -2,9 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "session_manager.h"
-#include <QDebug>
 #include <QMessageBox>
+#include "ui_mainwindow.h"
+#include "session_manager.h"
 
 namespace Ui {
 class MainWindow;

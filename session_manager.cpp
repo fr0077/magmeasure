@@ -5,15 +5,16 @@ SessionManager::SessionManager(QMainWindow *mw)
     currentSession = nullptr;
     this->mw = mw;
     QLabel *ql = mw->findChild<QLabel *>("session_name", Qt::FindChildrenRecursively);
-    ql->setText("Set!");
-}
-
-Session* SessionManager::getCurrentSession(){
-    return currentSession;
+    log(Log(Log::LogLevel::VERBOSE, currentSession, time(nullptr), "SessionManager created"));
+    ql->setText("No session running");
 }
 
 bool SessionManager::isSessionRunning(){
     return currentSession != nullptr;
+}
+
+void SessionManager::log(Log l){
+
 }
 
 void SessionManager::closeSession(){
@@ -21,12 +22,16 @@ void SessionManager::closeSession(){
         currentSession->close();
     }
     currentSession = nullptr;
+    QLabel *ql = mw->findChild<QLabel *>("session_name", Qt::FindChildrenRecursively);
+    ql->setText("No session running");
 }
 
-Session* SessionManager::newSession(){
+void SessionManager::newSession(){
     if(isSessionRunning())
         throw "Sesseion already running";
-    Session* session = new Session("test");
+    std::string session_name = "session1";
+    Session* session = new Session(session_name);
+    QLabel *ql = mw->findChild<QLabel *>("session_name", Qt::FindChildrenRecursively);
+    ql->setText(QString::fromStdString(session_name));
     currentSession = session;
-    return session;
 }

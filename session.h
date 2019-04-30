@@ -2,18 +2,24 @@
 #define SESSION_H
 
 #include <string>
+#include <QDebug>
+#include <QApplication>
 #include <ctime>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/optional.hpp>
 
 class Session
 {
 public:
-    const boost::uuids::uuid id = boost::uuids::random_generator()();
+    const std::string id = boost::uuids::to_string(boost::uuids::random_generator()());
     Session(std::string name);
     void close();
+    void start();
+    void pause();
     std::string getName(){
         return name;
     }
@@ -35,7 +41,11 @@ private:
     double actuator_origin_y;
     double actuator_origin_z;
 
-    std::string axis_order;
+    enum AXIS_ORDER{
+        XYZ,XZY,YXZ,YZX,ZXY,ZYX
+    };
+
+    AXIS_ORDER axisOrder;
 
     double deltax;
     double deltay;

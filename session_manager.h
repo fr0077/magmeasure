@@ -1,9 +1,12 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
-#include "session.h"
+#include <iomanip>
 #include <QMainWindow>
 #include <QLabel>
+#include <QString>
+#include "session.h"
+#include "log.h"
 #include "probe.h"
 #include <ctime>
 #include <vector>
@@ -18,9 +21,12 @@ public:
     SessionManager(QMainWindow *mw);
 
     bool isSessionRunning();
-    Session* getCurrentSession();
-    Session* newSession();
+    void newSession();
     void closeSession();
+    void startSession();
+    void pauseSession();
+
+    void log(Log l);
 
     void setActuatorErrorStatus(char status);
     void setActuatorPosition(double x, double y, double z);
@@ -29,4 +35,4 @@ public:
     void setFinishedCommands(int finished);
 };
 
-#endif // MANAGER_H
+#endif

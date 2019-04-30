@@ -29,11 +29,11 @@ SOURCES += \
     dummy_actuator.cpp \
     dummy_probe.cpp \
     group3_probe.cpp \
-    lakeshore_probe.cpp \
         main.cpp \
         mainwindow.cpp \
     session.cpp \
     session_manager.cpp \
+    sessionselectdialog.cpp \
     thk_actuator.cpp
 
 HEADERS += \
@@ -42,7 +42,8 @@ HEADERS += \
     probe.h \
     actuator.h \
     log.h \
-    session_manager.h
+    session_manager.h \
+    sessionselectdialog.h
 
 FORMS += \
         mainwindow.ui \
@@ -59,6 +60,5 @@ RESOURCES += \
 INCLUDEPATH += "/usr/local/Cellar/boost/1.69.0_2/include"
 
 DISTFILES += \
-    sessions.ini \
-    settings.ini
+    sessions.ini
 
