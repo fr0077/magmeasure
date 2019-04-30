@@ -60,14 +60,6 @@ public:
     //単位は0.01mm/s
     virtual Actuator_Error_Type setSpeed(ActuatorAxis axis, int speed) = 0;
 
-    //アクチュエーターの加速度を設定する
-    //単位は0.01m/s^2
-    virtual Actuator_Error_Type setAcceleration(ActuatorAxis axis, int acceleration) = 0;
-
-    //アクチュエーターの減速度を設定する
-    //単位は0.01m/s^2
-    virtual Actuator_Error_Type setDeceleration(ActuatorAxis axis, int deceleration) = 0;
-
     //アクチュエーターを指定した距離動かす
     //単位は0.1um
     //移動が完了するまでreturnしないこと

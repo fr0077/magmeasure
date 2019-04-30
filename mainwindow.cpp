@@ -17,7 +17,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_button_session_create_clicked()
 {
-    if(manager->isSessionRunning()){
+    if(manager->getSessionStatus() == Session::RUNNING){
         QMessageBox msgbox(this);
         msgbox.setIcon(QMessageBox::Warning);
         msgbox.setText(tr("すでにセッションが実行中です"));
@@ -30,7 +30,7 @@ void MainWindow::on_button_session_create_clicked()
 
 void MainWindow::on_button_session_abort_clicked()
 {
-    if(!manager->isSessionRunning()){
+    if(manager->getSessionStatus() != Session::RUNNING){
         return;
     }
 
@@ -47,6 +47,35 @@ void MainWindow::on_button_session_abort_clicked()
 }
 
 void MainWindow::on_button_session_start_clicked()
+{
+    if(manager->getSessionStatus() == Session::RUNNING){
+        return;
+    }
+
+    if(manager->getSessionStatus() == Session::NO_SESSION){
+        QMessageBox msgbox(this);
+        msgbox.setIcon(QMessageBox::Warning);
+        msgbox.setText(tr("セッションが選択されていません"));
+        msgbox.setStandardButtons(QMessageBox::Ok);
+        return;
+    }
+
+    if(manager->getSessionStatus() == Session::FINISHED){
+        QMessageBox msgbox(this);
+        msgbox.setIcon(QMessageBox::Warning);
+        msgbox.setText(tr("終了済みのセッションです"));
+        msgbox.setStandardButtons(QMessageBox::Ok);
+        return;
+    }
+
+    if(manager->getSessionStatus() == Session::READY
+            || manager->getSessionStatus() == Session::PAUSED){
+        //TODO: Start session
+        return;
+    }
+}
+
+void MainWindow::on_button_session_pause_clicked()
 {
 
 }

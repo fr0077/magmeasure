@@ -26,6 +26,8 @@ private slots:
 
     void on_button_session_start_clicked();
 
+    void on_button_session_pause_clicked();
+
 private:
     Ui::MainWindow *ui;
     SessionManager *manager;
