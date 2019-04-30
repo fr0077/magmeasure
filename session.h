@@ -4,12 +4,10 @@
 #include <string>
 #include <QDebug>
 #include <QApplication>
+#include <cstdio>
 #include <ctime>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include <boost/optional.hpp>
 
 class SessionManager;
@@ -17,7 +15,6 @@ class SessionManager;
 class Session
 {
 public:
-    const std::string id = boost::uuids::to_string(boost::uuids::random_generator()());
     Session(std::string name);
     void close();
     void start();
@@ -124,7 +121,7 @@ private:
     SessionManager *manager;
 
     Status checkStatus(){
-
+        return READY;
     }
 
     std::string name;

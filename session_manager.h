@@ -1,7 +1,8 @@
 #ifndef SESSION_MANAGER_H
 #define SESSION_MANAGER_H
 
-#include <iomanip>
+#include <iostream>
+#include <fstream>
 #include <QMainWindow>
 #include <QLabel>
 #include <QString>
@@ -15,20 +16,20 @@ class Session;
 class SessionManager
 {
 private:
-    Session* currentSession;
+    Session *currentSession = nullptr;
     QMainWindow *mw;
     void writeSessionParam();
     void clearSessionParam();
 public:
     SessionManager(QMainWindow *mw);
+    ~SessionManager();
 
     Session::Status getSessionStatus();
-    void newSession();
+    void newSession(std::string name);
     void closeSession();
     void startSession();
     void pauseSession();
 
-    void log(Log l);
     void setActuatorPosition(double x, double y, double z);
     void setMeasuringPosition(double x, double y, double z);
     void setProbeValue(Probe::ProbeValue v);

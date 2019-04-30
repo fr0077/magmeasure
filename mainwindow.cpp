@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-
+#include "session_select_dialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,7 +17,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_button_session_create_clicked()
 {
-    if(manager->getSessionStatus() == Session::RUNNING){
+    if(manager->getSessionStatus() == Session::RUNNING ||
+            manager->getSessionStatus() == Session::PAUSED){
         QMessageBox msgbox(this);
         msgbox.setIcon(QMessageBox::Warning);
         msgbox.setText(tr("すでにセッションが実行中です"));
@@ -25,7 +26,32 @@ void MainWindow::on_button_session_create_clicked()
         msgbox.exec();
         return;
     }
-    manager->newSession();
+
+    SessionSelectDialog d;
+    d.setParent(this);
+    QListView *ql = d.findChild<QListView *>("session_list", Qt::FindChildrenRecursively);
+    QStandardItemModel * model = new QStandardItemModel();
+    ql->setModel(model);
+
+    QStringList listItemText;
+    listItemText << "session1";
+    listItemText << "chant";
+    listItemText << "pray";
+    listItemText << "invoke!";
+
+    foreach ( QString text, listItemText )
+    {
+        QStandardItem * item = new QStandardItem();
+        item->setText( text );
+        item->setEditable( false );
+        model->appendRow( item ); // リストビューはアイテムを列に追加
+    }
+
+    d.exec();
+}
+
+void MainWindow::on_session_selected(std::string name){
+    manager->newSession(name);
 }
 
 void MainWindow::on_button_session_abort_clicked()

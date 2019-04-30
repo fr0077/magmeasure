@@ -34,7 +34,7 @@ SOURCES += \
         mainwindow.cpp \
     session.cpp \
     session_manager.cpp \
-    sessionselectdialog.cpp \
+    session_select_dialog.cpp \
     thk_actuator.cpp
 
 HEADERS += \
@@ -44,7 +44,7 @@ HEADERS += \
     actuator.h \
     log.h \
     session_manager.h \
-    sessionselectdialog.h
+    session_select_dialog.h
 
 FORMS += \
         mainwindow.ui \
