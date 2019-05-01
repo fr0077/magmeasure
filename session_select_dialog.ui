@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QListView" name="session_list">
+  <widget class="QListWidget" name="session_list">
    <property name="geometry">
     <rect>
      <x>20</x>

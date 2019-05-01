@@ -1,5 +1,8 @@
 #include "mainwindow.h"
+#include "session_manager.h"
 #include "session_select_dialog.h"
+
+class SessionManager;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,6 +16,15 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete manager;
+
+    time_t time = std::time(nullptr);
+    char s_time[256];
+    std::tm *ptm = std::localtime(&time);
+    strftime(s_time, 256, "%Y-%m-%d-%H-%M-%S", ptm);
+    std::string cmd = "mv LOG LOG_";
+    cmd += s_time;
+    FILE *fp = popen(cmd.c_str(), "r");
+    pclose(fp);
 }
 
 void MainWindow::on_button_session_create_clicked()
@@ -29,23 +41,17 @@ void MainWindow::on_button_session_create_clicked()
 
     SessionSelectDialog d;
     d.setParent(this);
-    QListView *ql = d.findChild<QListView *>("session_list", Qt::FindChildrenRecursively);
-    QStandardItemModel * model = new QStandardItemModel();
-    ql->setModel(model);
+    QListWidget *ql = d.findChild<QListWidget *>("session_list", Qt::FindChildrenRecursively);
 
     QStringList listItemText;
-    listItemText << "session1";
-    listItemText << "chant";
-    listItemText << "pray";
-    listItemText << "invoke!";
 
-    foreach ( QString text, listItemText )
-    {
-        QStandardItem * item = new QStandardItem();
-        item->setText( text );
-        item->setEditable( false );
-        model->appendRow( item ); // リストビューはアイテムを列に追加
+    boost::property_tree::ptree pt;
+    boost::property_tree::read_ini("sessions.ini", pt);
+    for(auto& section : pt){
+        listItemText << QString::fromStdString(section.first);
     }
+
+    ql->addItems(listItemText);
 
     d.exec();
 }
@@ -96,7 +102,7 @@ void MainWindow::on_button_session_start_clicked()
 
     if(manager->getSessionStatus() == Session::READY
             || manager->getSessionStatus() == Session::PAUSED){
-        //TODO: Start session
+        manager->startSession();
         return;
     }
 }

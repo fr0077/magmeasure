@@ -5,10 +5,17 @@
 #include <QDebug>
 #include <QApplication>
 #include <cstdio>
+#include <cstdlib>
 #include <ctime>
+#include <fstream>
+#include <map>
+#include <list>
+#include <iostream>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/optional.hpp>
+#include <boost/algorithm/string.hpp>
+#include "thk_actuator.h"
 
 class SessionManager;
 
@@ -113,6 +120,8 @@ public:
 
     void execute();
 
+    void resume();
+
 private:
     bool closed = false;
     int total_cmd_nums;
@@ -131,6 +140,12 @@ private:
     double ymax;
     double zmin;
     double zmax;
+
+    std::string magmesh_name;
+    std::string actmesh_name;
+    std::string cmds_name;
+    std::string datafile_name;
+    std::string logfile_name;
 
     int msec_measure_time;
     int msec_wait_after_move;

@@ -5,10 +5,15 @@
 #include <QMessageBox>
 #include "ui_mainwindow.h"
 #include "ui_session_select_dialog.h"
-#include "session_manager.h"
 #include <QStandardItemModel>
+#include <list>
+#include <QListWidget>
+#include <algorithm>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/algorithm/string.hpp>
+
+class SessionManager;
 
 namespace Ui {
 class MainWindow;
@@ -37,6 +42,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     SessionManager *manager;
+
 };
 
 #endif // MAINWINDOW_H

@@ -28,12 +28,129 @@ Session::Session(std::string name)
     msec_wait_after_move = getValue<int>(name, "msec_wait_after_move", pt);
     number_of_measure = getValue<int>(name, "number_of_measure", pt);
     actuator_speed = getValue<int>(name, "actuator_speed", pt);
+
+    magmesh_name = name + "_magmesh";
+    std::string cmd = "./meshgen 1 " + name + " | uniq > " + magmesh_name;
+    FILE *fp = popen(cmd.c_str(), "r");
+    pclose(fp);
+
+    actmesh_name = name + "_actmesh";
+    cmd = "./meshgen 2 " + name + " | uniq > " + actmesh_name;
+    fp = popen(cmd.c_str(), "r");
+    pclose(fp);
+
+    cmds_name = name + "_cmd";
+    cmd = "./mesh2cmd " + name + "_actmesh" + " > " + cmds_name;
+    fp = popen(cmd.c_str(), "r");
+    pclose(fp);
+
+    datafile_name = name + "_data";
+    logfile_name = name + "_log";
 }
 
 void Session::close(){
     closed = true;
 }
 
+void Session::resume(){
+
+}
+
 void Session::execute(){
-    manager->setActuatorPosition(1,1,1);
+    std::string line;
+    std::vector<std::vector<std::string>> magmeshs;
+    std::vector<std::vector<std::string>> actmeshs;
+    std::vector<std::vector<std::string>> cmds;
+
+    std::ifstream magmesh(magmesh_name);
+
+    while(getline(magmesh, line)){
+        std::vector<std::string> tokens;
+        boost::split(tokens, line, boost::is_space());
+        magmeshs.push_back(tokens);
+    }
+
+    magmesh.close();
+
+    std::ifstream actmesh(actmesh_name);
+
+    while(getline(actmesh, line)){
+        std::vector<std::string> tokens;
+        boost::split(tokens, line, boost::is_space());
+        actmeshs.push_back(tokens);
+    }
+
+    actmesh.close();
+
+    std::ifstream cmd(cmds_name);
+
+    while(getline(cmd, line)){
+        std::vector<std::string> tokens;
+        boost::split(tokens, line, boost::is_space());
+        cmds.push_back(tokens);
+    }
+
+    cmd.close();
+
+    if(!(magmeshs.size() == actmeshs.size() && actmeshs.size() == cmds.size()))
+        Log(Log::FATAL, this, "Mesh lines doesn't match").write();
+
+    Actuator *actuator = new ThkActuator(800,800,800);
+    std::map<std::string, Actuator::ActuatorAxis> axismap;
+
+    if(axis_order == "xyz"){
+        axismap["1"] = Actuator::ACTUATOR_AXIS_X;
+        axismap["2"] = Actuator::ACTUATOR_AXIS_Y;
+        axismap["3"] = Actuator::ACTUATOR_AXIS_Z;
+    }else if(axis_order == "xzy"){
+        axismap["1"] = Actuator::ACTUATOR_AXIS_X;
+        axismap["2"] = Actuator::ACTUATOR_AXIS_Z;
+        axismap["3"] = Actuator::ACTUATOR_AXIS_Y;
+    }else if(axis_order == "yxz"){
+        axismap["1"] = Actuator::ACTUATOR_AXIS_Y;
+        axismap["2"] = Actuator::ACTUATOR_AXIS_X;
+        axismap["3"] = Actuator::ACTUATOR_AXIS_Z;
+    }else if(axis_order == "yzx"){
+        axismap["1"] = Actuator::ACTUATOR_AXIS_Y;
+        axismap["2"] = Actuator::ACTUATOR_AXIS_Z;
+        axismap["3"] = Actuator::ACTUATOR_AXIS_X;
+    }else if(axis_order == "zxy"){
+        axismap["1"] = Actuator::ACTUATOR_AXIS_Z;
+        axismap["2"] = Actuator::ACTUATOR_AXIS_X;
+        axismap["3"] = Actuator::ACTUATOR_AXIS_Y;
+    }else if(axis_order == "zyx"){
+        axismap["1"] = Actuator::ACTUATOR_AXIS_Z;
+        axismap["2"] = Actuator::ACTUATOR_AXIS_Y;
+        axismap["3"] = Actuator::ACTUATOR_AXIS_X;
+    }
+
+    qDebug() << cmds.size();
+    //manager->setTotalCommands(cmds.size());
+
+    for(int i = 0; i < cmds.size(); i++){
+        sleep(1);
+        std::vector<std::string> cmdtoken = cmds.at(i);
+        if(cmdtoken.at(0) == "#"){
+            actuator->zero(axismap[cmdtoken.at(1)]);
+            Log(Log::INFO, this, "Actuator " + Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " moved to zero").write();
+        }else{
+            int dist_1 = std::atoi(cmdtoken.at(0).c_str());
+            int dist_2 = std::atoi(cmdtoken.at(1).c_str());
+            int dist_3 = std::atoi(cmdtoken.at(2).c_str());
+            if(dist_1 != 0){
+                actuator->moveDistance(axismap["1"], dist_1);
+                Log(Log::INFO, this, "Actuator " + Actuator::axis_toString(axismap["1"]) + " moved " + std::to_string(dist_1)).write();
+            }
+            if(dist_2 != 0){
+                actuator->moveDistance(axismap["2"], dist_2);
+                Log(Log::INFO, this, "Actuator " + Actuator::axis_toString(axismap["2"]) + " moved " + std::to_string(dist_2)).write();
+            }
+            if(dist_3 != 0){
+                actuator->moveDistance(axismap["3"], dist_3);
+                Log(Log::INFO, this, "Actuator " + Actuator::axis_toString(axismap["3"]) + " moved " + std::to_string(dist_3)).write();
+            }
+        }
+
+        //manager->setFinishedCommands(i);
+    }
 }

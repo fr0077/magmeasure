@@ -1,6 +1,7 @@
 #ifndef ACTUATOR_H
 #define ACTUATOR_H
 #include <vector>
+#include <string>
 
 class Actuator
 {
@@ -25,6 +26,16 @@ public:
     enum ActuatorAxis{
       ACTUATOR_AXIS_X,ACTUATOR_AXIS_Y,ACTUATOR_AXIS_Z
     };
+
+    static std::string axis_toString(ActuatorAxis axis){
+        if(axis == ACTUATOR_AXIS_X)
+            return "X";
+        if(axis == ACTUATOR_AXIS_Y)
+            return "Y";
+        if(axis == ACTUATOR_AXIS_Z){
+            return "Z";
+        }
+    }
 
     enum Actuator_Error_Type{
         //アクチュエーターはコマンドを正常に実行した

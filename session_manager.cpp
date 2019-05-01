@@ -1,7 +1,8 @@
 #include "session.h"
 #include "session_manager.h"
+#include "mainwindow.h"
 
-SessionManager::SessionManager(QMainWindow *mw)
+SessionManager::SessionManager(MainWindow *mw)
 {
     this->mw = mw;
     Log(Log::LogLevel::VERBOSE, currentSession, "SessionManager created").write();
@@ -25,6 +26,10 @@ void SessionManager::closeSession(){
     }
     currentSession = nullptr;
     clearSessionParam();
+}
+
+void SessionManager::startSession(){
+    currentSession->execute();
 }
 
 void SessionManager::newSession(std::string name){
@@ -88,33 +93,12 @@ void SessionManager::writeSessionParam(){
 
     ql = mw->findChild<QLabel *>("measure_time", Qt::FindChildrenRecursively);
     ql->setText(QString::number(currentSession->getMeasureTime()));
-
-    ql = mw->findChild<QLabel *>("cmd_finished", Qt::FindChildrenRecursively);
-    ql->setText(QString::number(currentSession->getFinishedCmds()));
-
-    ql = mw->findChild<QLabel *>("cmd_total", Qt::FindChildrenRecursively);
-    ql->setText(QString::number(currentSession->getTotalCmds()));
 }
 
-void SessionManager::setFinishedCommands(int finished){
-    QLabel *ql = mw->findChild<QLabel *>("cmd_finished", Qt::FindChildrenRecursively);
-    ql->setText(QString::number(finished));
-}
-
-void SessionManager::setProbeValue(Probe::ProbeValue v){
-
-}
-
-void SessionManager::set1AxisProbeValue(Probe::ProbeValue v){
-
-}
-
-void SessionManager::setActuatorPosition(double x, double y, double z){
-
-}
-
-void SessionManager::setMeasuringPosition(double x, double y, double z){
-
+void SessionManager::setTotalCommands(int total){
+    //qDebug() << mw;
+    //QLabel *ql = mw->findChild<QLabel *>("cmd_total", Qt::FindChildrenRecursively);
+    //ql->setText(QString::number(total));
 }
 
 void SessionManager::clearSessionParam(){

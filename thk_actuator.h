@@ -1,9 +1,9 @@
 #include "actuator.h"
 
-class DummyActuator : public Actuator{
-
+class ThkActuator : public Actuator{
 public:
-    DummyActuator(int xmax, int ymax, int zmax) : Actuator(xmax, ymax, zmax){}
+
+    ThkActuator(int xmax, int ymax, int zmax) : Actuator(xmax, ymax, zmax){}
 
     Actuator_Error_Type resetAlarm(ActuatorAxis axis){
         return COMMAND_SUCCESS;
@@ -42,14 +42,6 @@ public:
     }
 
     Actuator_Error_Type setSpeed(ActuatorAxis axis, int speed){
-        return COMMAND_SUCCESS;
-    }
-
-    Actuator_Error_Type setAcceleration(ActuatorAxis axis, int acceleration){
-        return COMMAND_SUCCESS;
-    }
-
-    Actuator_Error_Type setDeceleration(ActuatorAxis axis, int deceleration){
         return COMMAND_SUCCESS;
     }
 

@@ -26,25 +26,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    dummy_actuator.cpp \
-    dummy_probe.cpp \
-    group3_one_axis_probe.cpp \
-    group3_probe.cpp \
         main.cpp \
         mainwindow.cpp \
     session.cpp \
     session_manager.cpp \
-    session_select_dialog.cpp \
-    thk_actuator.cpp
+    session_select_dialog.cpp
 
 HEADERS += \
+    group3_one_axis_probe.h \
+    group3_probe.h \
         mainwindow.h \
     session.h \
     probe.h \
     actuator.h \
     log.h \
     session_manager.h \
-    session_select_dialog.h
+    session_select_dialog.h \
+    thk_actuator.h
 
 FORMS += \
         mainwindow.ui \
