@@ -10,22 +10,6 @@ SessionManager::~SessionManager(){
     delete currentSession;
 }
 
-Session::Status SessionManager::getSessionStatus(){
-    if(currentSession == nullptr){
-        return Session::NO_SESSION;
-    }
-
-    return currentSession->getStatus();
-}
-
-void SessionManager::closeSession(){
-    if(getSessionStatus() == Session::RUNNING){
-        currentSession->close();
-    }
-    currentSession = nullptr;
-    clearSessionParam();
-}
-
 void SessionManager::startSession(){
     currentSession->execute();
 }

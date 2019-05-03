@@ -109,20 +109,11 @@ public:
         return axis_order;
     }
 
-    Status getStatus(){
-        if(closed){
-            return Session::FINISHED;
-        }
-
-        else return checkStatus();
-    }
-
     void execute();
 
     void resume();
 
 private:
-    bool closed = false;
     int total_cmd_nums;
     int finished_cmd_nums = 0;
 
