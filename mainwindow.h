@@ -12,6 +12,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/algorithm/string.hpp>
+#include "session_select_dialog.h"
+#include <QApplication>
 
 class SessionManager;
 
@@ -32,12 +34,7 @@ public:
 private slots:
 
     void on_button_session_create_clicked();
-
-    void on_button_session_abort_clicked();
-
     void on_button_session_start_clicked();
-
-    void on_button_session_pause_clicked();
 
 private:
     Ui::MainWindow *ui;

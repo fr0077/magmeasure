@@ -1,8 +1,5 @@
 #include "mainwindow.h"
 #include "session_manager.h"
-#include "session_select_dialog.h"
-
-class SessionManager;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -60,24 +57,6 @@ void MainWindow::on_session_selected(std::string name){
     manager->newSession(name);
 }
 
-void MainWindow::on_button_session_abort_clicked()
-{
-    if(manager->getSessionStatus() != Session::RUNNING){
-        return;
-    }
-
-    QMessageBox msgbox(this);
-    msgbox.setIcon(QMessageBox::Warning);
-    msgbox.setText(tr("本当にセッションを終了しますか？"));
-    msgbox.setStandardButtons(QMessageBox::Ok | QMessageBox::No);
-    int response = msgbox.exec();
-    if(response == QMessageBox::Ok){
-        manager->closeSession();
-        return;
-    }
-    return;
-}
-
 void MainWindow::on_button_session_start_clicked()
 {
     if(manager->getSessionStatus() == Session::RUNNING){
@@ -105,9 +84,4 @@ void MainWindow::on_button_session_start_clicked()
         manager->startSession();
         return;
     }
-}
-
-void MainWindow::on_button_session_pause_clicked()
-{
-
 }

@@ -1,6 +1,9 @@
 #ifndef PROBE_H
 #define PROBE_H
 
+#include "log.h"
+#include <iostream>
+#include <fstream>
 
 class Probe
 {
@@ -9,7 +12,7 @@ public:
       PROBE_AXIS_X,PROBE_AXIS_Y,PROBE_AXIS_Z
     };
 
-    virtual ~Probe();
+    virtual ~Probe(){}
 
     enum ProbeErrorType{
         //プローブはコマンドを正常に実行した

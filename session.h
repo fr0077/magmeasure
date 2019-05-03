@@ -15,7 +15,6 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/optional.hpp>
 #include <boost/algorithm/string.hpp>
-#include "thk_actuator.h"
 
 class SessionManager;
 
@@ -87,7 +86,7 @@ public:
     }
 
     int getWaitTime(){
-        return msec_wait_after_move;
+        return sec_wait_after_move;
     }
 
     int getSpeed(){
@@ -148,7 +147,7 @@ private:
     std::string logfile_name;
 
     int msec_measure_time;
-    int msec_wait_after_move;
+    int sec_wait_after_move;
     int number_of_measure;
 
     int actuator_speed;

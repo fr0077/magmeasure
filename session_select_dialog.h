@@ -5,8 +5,11 @@
 #include <QModelIndexList>
 #include <QDebug>
 #include <iostream>
-#include "session_manager.h"
-#include "mainwindow.h"
+#include "log.h"
+#include "ui_session_select_dialog.h"
+
+class MainWindow;
+class SessionManager;
 
 namespace Ui {
 class SessionSelectDialog;

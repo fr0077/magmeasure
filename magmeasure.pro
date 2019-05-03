@@ -56,7 +56,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     magmeasure-resources.qrc
 
-#INCLUDEPATH += $$(BOOST_INCLUDE)
 INCLUDEPATH += /usr/local/Cellar/boost/1.69.0_2/include
 
 DISTFILES += \

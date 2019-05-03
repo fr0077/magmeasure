@@ -1,6 +1,5 @@
 #include "session_select_dialog.h"
-#include "ui_session_select_dialog.h"
-#include "log.h"
+#include "mainwindow.h"
 
 SessionSelectDialog::SessionSelectDialog(QWidget *parent) :
     QDialog(parent),

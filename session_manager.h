@@ -5,15 +5,15 @@
 #include <fstream>
 #include <QLabel>
 #include <QString>
-#include "log.h"
 #include "probe.h"
 #include <ctime>
 #include <QListView>
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <vector>
+#include "mainwindow.h"
+#include "session.h"
 
-class Session;
 class MainWindow;
 
 class SessionManager

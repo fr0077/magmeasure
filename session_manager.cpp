@@ -1,11 +1,9 @@
-#include "session.h"
 #include "session_manager.h"
-#include "mainwindow.h"
 
 SessionManager::SessionManager(MainWindow *mw)
 {
     this->mw = mw;
-    Log(Log::LogLevel::VERBOSE, currentSession, "SessionManager created").write();
+    Log(Log::LogLevel::VERBOSE, "SessionManager created").write();
 }
 
 SessionManager::~SessionManager(){

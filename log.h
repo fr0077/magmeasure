@@ -1,8 +1,6 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include "session.h"
-#include <boost/uuid/uuid.hpp>
 #include <string>
 #include <ctime>
 #include <iostream>
@@ -15,13 +13,9 @@ public:
     enum LogLevel{
         FATAL,WARN,INFO,VERBOSE
     };
-    Log(LogLevel loglevel, Session *session, std::string message){
+
+    Log(LogLevel loglevel, std::string message){
         this->loglevel = loglevel;
-        if(session != nullptr){
-            this->session_name = session->getName();
-        }else{
-            this->session_name = "-";
-        }
 
         this->message = message;
         this->time = std::time(nullptr);
@@ -48,11 +42,10 @@ public:
         std::tm *ptm = std::localtime(&time);
         strftime(s_time, 256, "%Y-%m-%d %H:%M:%S", ptm);
 
-        return std::string(s_time) + "\t" + logLevel + "\t" + session_name + "\t" + message + "\n";
+        return std::string(s_time) + "\t" + logLevel + "\t" + message + "\n";
     }
 private:
     LogLevel loglevel;
-    std::string session_name;
     std::string message;
     std::time_t time;
 };
