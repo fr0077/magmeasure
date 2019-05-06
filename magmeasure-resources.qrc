@@ -8,5 +8,6 @@
         <file>icons/stop.png</file>
         <file>icons/plus.png</file>
         <file>icons/cancel.png</file>
+        <file>icons/arrows.png</file>
     </qresource>
 </RCC>

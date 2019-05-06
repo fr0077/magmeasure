@@ -52,3 +52,8 @@ void MainWindow::on_button_session_start_clicked()
 
     manager->startSession();
 }
+
+void MainWindow::on_toolButton_clicked()
+{
+
+}

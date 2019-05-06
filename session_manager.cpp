@@ -11,7 +11,11 @@ SessionManager::~SessionManager(){
 }
 
 void SessionManager::startSession(){
-    currentSession->execute();
+    currentSession->begin();
+}
+
+void SessionManager::resumeSession(){
+    currentSession->resume();
 }
 
 void SessionManager::newSession(std::string name){
@@ -75,12 +79,13 @@ void SessionManager::writeSessionParam(){
 
     ql = mw->findChild<QLabel *>("measure_time", Qt::FindChildrenRecursively);
     ql->setText(QString::number(currentSession->getMeasureTime()));
+
+    setTotalCommands(currentSession->getTotalCmds());
 }
 
 void SessionManager::setTotalCommands(int total){
-    //qDebug() << mw;
-    //QLabel *ql = mw->findChild<QLabel *>("cmd_total", Qt::FindChildrenRecursively);
-    //ql->setText(QString::number(total));
+    QLabel *ql = mw->findChild<QLabel *>("cmd_total", Qt::FindChildrenRecursively);
+    ql->setText(QString::number(total));
 }
 
 void SessionManager::clearSessionParam(){
@@ -98,7 +103,6 @@ void SessionManager::clearSessionParam(){
     mw->findChild<QLabel *>("measure_time", Qt::FindChildrenRecursively)->clear();
     mw->findChild<QLabel *>("wait_time", Qt::FindChildrenRecursively)->clear();
     mw->findChild<QLabel *>("number_of_measuring", Qt::FindChildrenRecursively)->clear();
-    mw->findChild<QLabel *>("cmd_finished", Qt::FindChildrenRecursively)->clear();
     mw->findChild<QLabel *>("cmd_total", Qt::FindChildrenRecursively)->clear();
     mw->findChild<QLabel *>("speed", Qt::FindChildrenRecursively)->clear();
 }

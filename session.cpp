@@ -47,15 +47,40 @@ Session::Session(std::string name)
     fp = popen(cmd.c_str(), "r");
     pclose(fp);
 
+    cmd = "wc -l " + name + "_cmd";
+    fp = popen(cmd.c_str(), "r");
+    char result[30];
+    std::string str;
+    while (fgets(result, sizeof(result), fp))
+        str += result;
+    pclose(fp);
+    total_cmd_nums = std::atoi(result);
+
     datafile_name = name + "_data";
     logfile_name = name + "_log";
 }
 
 void Session::resume(){
+    std::string cmd = "tail -n 1 datafile_name";
+    FILE *fp = popen(cmd.c_str(), "r");
+    char result[100];
+    std::string str;
+    while (fgets(result, sizeof(result), fp))
+        str += result;
+    pclose(fp);
 
+    std::vector<std::string> results;
+    boost::split(results, str, boost::is_space());
+
+    int last_line = std::atoi(results.at(2).c_str());
+    begin(last_line);
 }
 
-void Session::execute(){
+void Session::begin(){
+    begin(0);
+}
+
+void Session::begin(int line_num){
     std::string line;
     std::vector<std::vector<std::string>> magmeshs;
     std::vector<std::vector<std::string>> actmeshs;
@@ -91,8 +116,9 @@ void Session::execute(){
 
     cmd.close();
 
-    if(!(magmeshs.size() == actmeshs.size() && actmeshs.size() == cmds.size()))
+    if(!(magmeshs.size() == actmeshs.size() && actmeshs.size() == cmds.size())){
         Log(Log::FATAL, "Mesh lines doesn't match").write();
+    }
 
     Actuator *actuator = new ThkActuator(800,800,800);
     std::map<std::string, Actuator::ActuatorAxis> axismap;
@@ -229,7 +255,7 @@ void Session::execute(){
 
     std::ofstream data(datafile_name, std::ios::app);
 
-    for(int i = 0; i < cmds.size(); i++){
+    for(int i = line_num; i < cmds.size(); i++){
         std::vector<std::string> cmdtoken = cmds.at(i);
         if(cmdtoken.at(0) == "#"){
             for (;;) {
@@ -239,7 +265,8 @@ void Session::execute(){
                     Log(Log::INFO, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type));
                     break;
                 }else{
-                    Log(Log::WARN, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type));
+                    Log(Log::FATAL, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type));
+                    return;
                 }
             }
 
@@ -298,13 +325,17 @@ void Session::execute(){
 
             std::vector<std::string> vec = magmeshs.at(i);
             std::string x,y,z;
-            if(axis_order != "zxy"){
-                Log(Log::LogLevel::FATAL, "not implemented");
-                exit(EXIT_FAILURE);
-            }else{
+            if(axis_order == "zxy"){
                 z = vec.at(0);
                 x = vec.at(1);
                 y = vec.at(2);
+            }else if(axis_order == "zyx"){
+                z = vec.at(0);
+                y = vec.at(1);
+                x = vec.at(2);
+            }else{
+                Log(Log::LogLevel::FATAL, "not implemented");
+                exit(EXIT_FAILURE);
             }
 
             double real_x, real_y, real_z;
@@ -316,6 +347,7 @@ void Session::execute(){
 
             std::string line;
             line += std::string(s_time);
+            line += " " + std::to_string(i) + " ";
             line += x + " " + y + " " + z + " ";
             line += std::to_string(real_x) + " " + std::to_string(real_y) + " " + std::to_string(real_z) + " ";
             line += std::to_string(v3.x) + " " + std::to_string(v3.y) + " " + std::to_string(v3.z) + " " + std::to_string(v1.x);

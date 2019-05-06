@@ -29,9 +29,8 @@ public:
 
     Session::Status getSessionStatus();
     void newSession(std::string name);
-    void closeSession();
     void startSession();
-    void pauseSession();
+    void resumeSession();
     void setTotalCommands(int total);
 };
 

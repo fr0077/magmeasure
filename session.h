@@ -37,10 +37,6 @@ public:
         return total_cmd_nums;
     }
 
-    int getFinishedCmds(){
-        return finished_cmd_nums;
-    }
-
     double getXmin(){
         return xmin;
     }
@@ -109,13 +105,14 @@ public:
         return axis_order;
     }
 
-    void execute();
+    void begin();
 
     void resume();
 
 private:
     int total_cmd_nums;
-    int finished_cmd_nums = 0;
+
+    void begin(int i);
 
     SessionManager *manager;
 
