@@ -85,6 +85,11 @@ public:
         std::vector<std::string> response;
     }ActuatorResponse;
 
+
+    virtual int realPosition_bytesToInt(ActuatorResponse response) = 0;
+
+    virtual int indicatedPosition_bytesToInt(ActuatorResponse response) = 0;
+
     //アクチュエータからアラームを取得する
     virtual ActuatorResponse getAlarm(ActuatorAxis axis) = 0;
 

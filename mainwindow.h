@@ -35,6 +35,7 @@ private slots:
 
     void on_button_session_create_clicked();
     void on_button_session_start_clicked();
+    void on_resume_clicked();
 
 private:
     Ui::MainWindow *ui;

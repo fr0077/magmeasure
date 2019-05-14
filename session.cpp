@@ -77,6 +77,7 @@ void Session::resume(){
 }
 
 void Session::begin(){
+    Log(Log::LogLevel::VERBOSE, "Session begin");
     begin(0);
 }
 
@@ -121,6 +122,9 @@ void Session::begin(int line_num){
     }
 
     Actuator *actuator = new ThkActuator(800,800,800);
+    actuator->setSpeed(Actuator::ACTUATOR_AXIS_X, actuator_speed);
+    actuator->setSpeed(Actuator::ACTUATOR_AXIS_Y, actuator_speed);
+    actuator->setSpeed(Actuator::ACTUATOR_AXIS_Z, actuator_speed);
     std::map<std::string, Actuator::ActuatorAxis> axismap;
 
     if(axis_order == "xyz"){
@@ -224,10 +228,10 @@ void Session::begin(int line_num){
         Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_X);
 
         if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " resetAlarm " + Actuator::error_toString(type)).write();
+            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " servoOn " + Actuator::error_toString(type)).write();
             break;
         }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " resetAlarm " + Actuator::error_toString(type)).write();
+            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " servoOn " + Actuator::error_toString(type)).write();
         }
     }
 
@@ -235,10 +239,10 @@ void Session::begin(int line_num){
         Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Y);
 
         if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " resetAlarm " + Actuator::error_toString(type)).write();
+            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
             break;
         }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " resetAlarm " + Actuator::error_toString(type)).write();
+            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
         }
     }
 
@@ -246,15 +250,16 @@ void Session::begin(int line_num){
         Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Z);
 
         if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " resetAlarm " + Actuator::error_toString(type)).write();
+            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " servoOn " + Actuator::error_toString(type)).write();
             break;
         }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " resetAlarm " + Actuator::error_toString(type)).write();
+            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " servoOn " + Actuator::error_toString(type)).write();
         }
     }
 
     std::ofstream data(datafile_name, std::ios::app);
 
+    Log(Log::LogLevel::VERBOSE, std::to_string(line_num));
     for(int i = line_num; i < cmds.size(); i++){
         std::vector<std::string> cmdtoken = cmds.at(i);
         if(cmdtoken.at(0) == "#"){
@@ -262,11 +267,10 @@ void Session::begin(int line_num){
                 Actuator::Actuator_Error_Type type = actuator->zero(axismap[cmdtoken.at(1)]);
 
                 if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-                    Log(Log::INFO, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type));
+                    Log(Log::INFO, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type)).write();
                     break;
                 }else{
-                    Log(Log::FATAL, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type));
-                    return;
+                    Log(Log::WARN, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type)).write();
                 }
             }
 
@@ -292,27 +296,49 @@ void Session::begin(int line_num){
                 dist_2 = std::abs(dist_2);
             }
 
-            if(dist_1 < 0){
+            if(dist_3 < 0){
                 dir_3 = Actuator::Direction::NEGATIVE;
                 dist_3 = std::abs(dist_3);
             }
 
-            if(dist_1 != 0){
-                actuator->setDistance(axismap["1"], dist_1);
-                actuator->move(axismap["1"], dir_1);
-                Log(Log::INFO, "Actuator " + Actuator::axis_toString(axismap["1"]) + " moved " + std::to_string(dist_1)).write();
-            }
-            if(dist_2 != 0){
-                actuator->setDistance(axismap["2"], dist_2);
-                actuator->move(axismap["2"], dir_2);
-                Log(Log::INFO, "Actuator " + Actuator::axis_toString(axismap["2"]) + " moved " + std::to_string(dist_2)).write();
-            }
             if(dist_3 != 0){
-                actuator->setDistance(axismap["3"], dist_3);
+                actuator->setDistance(axismap["3"], dist_3*1000);
                 actuator->move(axismap["3"], dir_3);
                 Log(Log::INFO, "Actuator " + Actuator::axis_toString(axismap["3"]) + " moved " + std::to_string(dist_3)).write();
             }
+
+            if(dist_2 != 0){
+                actuator->setDistance(axismap["2"], dist_2*1000);
+                actuator->move(axismap["2"], dir_2);
+                Log(Log::INFO, "Actuator " + Actuator::axis_toString(axismap["2"]) + " moved " + std::to_string(dist_2)).write();
+            }
+
+            if(dist_1 != 0){
+                actuator->setDistance(axismap["1"], dist_1*1000);
+                actuator->move(axismap["1"], dir_1);
+                Log(Log::INFO, "Actuator " + Actuator::axis_toString(axismap["1"]) + " moved " + std::to_string(dist_1)).write();
+            }
+
             sleep(sec_wait_after_move);
+        }
+
+        std::string real_x = "*", real_y = "*", real_z = "*";
+        std::string ind_x = "*", ind_y = "*", ind_z = "*";
+
+        Actuator::ActuatorResponse res_x = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_X);
+        Actuator::ActuatorResponse res_y = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_Y);
+        Actuator::ActuatorResponse res_z = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_Z);
+        if(res_x.errType == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+            real_x = std::to_string(actuator->realPosition_bytesToInt(res_x));
+            ind_x  = std::to_string(actuator->indicatedPosition_bytesToInt(res_x));
+        }
+        if(res_y.errType == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+            real_y = std::to_string(actuator->realPosition_bytesToInt(res_y));
+            ind_y  = std::to_string(actuator->indicatedPosition_bytesToInt(res_y));
+        }
+        if(res_z.errType == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+            real_z = std::to_string(actuator->realPosition_bytesToInt(res_z));
+            ind_z  = std::to_string(actuator->indicatedPosition_bytesToInt(res_z));
         }
 
         for(int j = 0; j < number_of_measure; j++){
@@ -337,19 +363,11 @@ void Session::begin(int line_num){
                 Log(Log::LogLevel::FATAL, "not implemented");
                 exit(EXIT_FAILURE);
             }
-
-            double real_x, real_y, real_z;
-
-            //TODO: Convert
-            Actuator::ActuatorResponse res_x;
-            Actuator::ActuatorResponse res_y;
-            Actuator::ActuatorResponse res_z;
-
             std::string line;
             line += std::string(s_time);
             line += " " + std::to_string(i) + " ";
             line += x + " " + y + " " + z + " ";
-            line += std::to_string(real_x) + " " + std::to_string(real_y) + " " + std::to_string(real_z) + " ";
+            line += real_x + " " + real_y + " " + real_z + " " + ind_x + " " + ind_y + " " + ind_z + " ";
             line += std::to_string(v3.x) + " " + std::to_string(v3.y) + " " + std::to_string(v3.z) + " " + std::to_string(v1.x);
             data <<  line << std::endl;
             usleep(1000 * msec_measure_time);

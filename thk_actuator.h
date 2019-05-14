@@ -7,7 +7,7 @@ class ThkActuator : public Actuator{
 private:
     std::vector<std::string> getResult(std::string cmd){
         FILE *fp = popen(cmd.c_str(), "r");
-        char result[30];
+        char result[300];
         std::string str;
         while (fgets(result, sizeof(result), fp))
             str += result;
@@ -88,21 +88,28 @@ public:
 
         std::string cmd = "./stage/get_current_position.py " + Actuator::axis_toString(axis);
 
-        std::vector<std::string> result = getResult(cmd);
+        ret.response = getResult(cmd);
         Actuator_Error_Type type;
 
-        if(result.at(0) == "TIMEOUT")
+        if(ret.response.at(0) == "TIMEOUT"){
             type = TIMED_OUT;
-        else{
-            std::string bytes = result.at(0).substr(0,8);
-            qDebug() << QString::fromStdString(bytes);
-        }
-
-        for(int i = 1; i < result.size() - 1; i++){
-            ret.response.push_back(result.at(i));
+        }else if(ret.response.size() != 9){
+            type = COMMAND_FAILED;
+        }else{
+            type = Actuator_Error_Type::COMMAND_SUCCESS;
         }
 
         return ret;
+    }
+
+    int realPosition_bytesToInt(ActuatorResponse response){
+        std::string realpos_bytes = response.response.at(3) + response.response.at(2)+response.response.at(1)+response.response.at(0);
+        return static_cast<int>(std::stoul(realpos_bytes, nullptr, 16));
+    }
+
+    int indicatedPosition_bytesToInt(ActuatorResponse response){
+        std::string indicatedpos_bytes = response.response.at(7) + response.response.at(6)+response.response.at(5)+response.response.at(4);
+        return static_cast<int>(std::stoul(indicatedpos_bytes, nullptr, 16));
     }
 
     ActuatorResponse getZeroingCompleted(ActuatorAxis axis){
@@ -168,7 +175,7 @@ public:
 
         if(result.at(0) == "01"){
             type = COMMAND_SUCCESS;
-            sleep(int(estimateTime(axis) + 1));
+            sleep((unsigned int)(estimateTime(axis) + 1));
         }else if(result.at(0) == "00"){
             type = COMMAND_FAILED;
         }else{
@@ -184,13 +191,15 @@ public:
         std::vector<std::string> result = getResult(cmd);
         Actuator_Error_Type type;
 
-        if(result.at(0) == "01")
+        if(result.at(0) == "01"){
             type = COMMAND_SUCCESS;
-            if(axis == ACTUATOR_AXIS_X || axis == ACTUATOR_AXIS_Z)
+            if(axis == ACTUATOR_AXIS_X || axis == ACTUATOR_AXIS_Z){
                 sleep(30);
-            if(axis == ACTUATOR_AXIS_Y)
+            }
+            if(axis == ACTUATOR_AXIS_Y){
                 sleep(60);
-        else if(result.at(0) == "00"){
+            }
+        }else if(result.at(0) == "00"){
             type = COMMAND_FAILED;
         }else{
             type = TIMED_OUT;

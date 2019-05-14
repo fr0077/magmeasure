@@ -744,7 +744,7 @@
            </size>
           </property>
           <property name="text">
-           <string/>
+           <string>開始</string>
           </property>
           <property name="icon">
            <iconset resource="magmeasure-resources.qrc">
@@ -755,6 +755,29 @@
             <width>48</width>
             <height>48</height>
            </size>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextUnderIcon</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="resume">
+          <property name="text">
+           <string>再開</string>
+          </property>
+          <property name="icon">
+           <iconset resource="magmeasure-resources.qrc">
+            <normaloff>:/icons/arrows.png</normaloff>:/icons/arrows.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>48</width>
+            <height>48</height>
+           </size>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextUnderIcon</enum>
           </property>
          </widget>
         </item>

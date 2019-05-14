@@ -21,7 +21,7 @@ class Group3Probe : public Probe{
         value.z = 0;
         return value;
 
-        std::string cmd = "./get_3axis.sh";
+        std::string cmd = "./dummy.sh";
         FILE *fp = popen(cmd.c_str(), "r");
         char result[30];
         std::string str;

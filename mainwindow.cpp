@@ -18,7 +18,7 @@ MainWindow::~MainWindow()
     char s_time[256];
     std::tm *ptm = std::localtime(&time);
     strftime(s_time, 256, "%Y-%m-%d-%H-%M-%S", ptm);
-    std::string cmd = "mv LOG LOG_";
+    std::string cmd = "mv LOG logs/LOG_";
     cmd += s_time;
     FILE *fp = popen(cmd.c_str(), "r");
     pclose(fp);
@@ -53,7 +53,7 @@ void MainWindow::on_button_session_start_clicked()
     manager->startSession();
 }
 
-void MainWindow::on_toolButton_clicked()
+void MainWindow::on_resume_clicked()
 {
 
 }
