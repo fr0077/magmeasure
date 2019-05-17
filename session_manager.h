@@ -30,7 +30,8 @@ public:
     Session::Status getSessionStatus();
     void newSession(std::string name);
     void startSession();
-    void resumeSession();
+    void resumeSession(int i);
+    Session* getCurrentSession();
     void setTotalCommands(int total);
 };
 

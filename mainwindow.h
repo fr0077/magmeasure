@@ -4,10 +4,12 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include "ui_mainwindow.h"
+#include "session_resume_dialog.h"
 #include "ui_session_select_dialog.h"
 #include <QStandardItemModel>
 #include <list>
 #include <QListWidget>
+#include <QLineEdit>
 #include <algorithm>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
@@ -29,6 +31,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     void on_session_selected(std::string name);
+    void on_cmd_num_entered(int num);
     ~MainWindow();
 
 private slots:

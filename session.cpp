@@ -34,20 +34,21 @@ Session::Session(std::string name)
 
     magmesh_name = name + "_magmesh";
     std::string cmd = "./meshgen 1 " + name + " | uniq > " + magmesh_name;
-    FILE *fp = popen(cmd.c_str(), "r");
-    pclose(fp);
+    FILE *fp;
+//    fp = popen(cmd.c_str(), "r");
+//    pclose(fp);
 
     actmesh_name = name + "_actmesh";
     cmd = "./meshgen 2 " + name + " | uniq > " + actmesh_name;
-    fp = popen(cmd.c_str(), "r");
-    pclose(fp);
+//    fp = popen(cmd.c_str(), "r");
+//    pclose(fp);
 
-    cmds_name = name + "_cmd";
+    cmds_name = name + "_cmds";
     cmd = "./mesh2cmd " + name + "_actmesh" + " > " + cmds_name;
-    fp = popen(cmd.c_str(), "r");
-    pclose(fp);
+//    fp = popen(cmd.c_str(), "r");
+//    pclose(fp);
 
-    cmd = "wc -l " + name + "_cmd";
+    cmd = "wc -l " + name + "_cmds";
     fp = popen(cmd.c_str(), "r");
     char result[30];
     std::string str;
@@ -60,25 +61,14 @@ Session::Session(std::string name)
     logfile_name = name + "_log";
 }
 
-void Session::resume(){
-    std::string cmd = "tail -n 1 datafile_name";
-    FILE *fp = popen(cmd.c_str(), "r");
-    char result[100];
-    std::string str;
-    while (fgets(result, sizeof(result), fp))
-        str += result;
-    pclose(fp);
-
-    std::vector<std::string> results;
-    boost::split(results, str, boost::is_space());
-
-    int last_line = std::atoi(results.at(2).c_str());
-    begin(last_line);
+void Session::resume(int i){
+    Log(Log::LogLevel::INFO, "Session resume");
+    begin(i);
 }
 
 void Session::begin(){
-    Log(Log::LogLevel::VERBOSE, "Session begin");
-    begin(0);
+    Log(Log::LogLevel::INFO, "Session begin");
+    begin(1);
 }
 
 void Session::begin(int line_num){
@@ -235,16 +225,16 @@ void Session::begin(int line_num){
         }
     }
 
-    for (;;) {
-        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Y);
+//    for (;;) {
+//        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Y);
 
-        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
-            break;
-        }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
-        }
-    }
+//        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+//            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
+//            break;
+//        }else{
+//            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
+//        }
+//    }
 
     for (;;) {
         Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Z);
@@ -260,7 +250,7 @@ void Session::begin(int line_num){
     std::ofstream data(datafile_name, std::ios::app);
 
     Log(Log::LogLevel::VERBOSE, std::to_string(line_num));
-    for(int i = line_num; i < cmds.size(); i++){
+    for(int i = line_num - 1; i < cmds.size(); i++){
         std::vector<std::string> cmdtoken = cmds.at(i);
         if(cmdtoken.at(0) == "#"){
             for (;;) {
@@ -270,6 +260,7 @@ void Session::begin(int line_num){
                     Log(Log::INFO, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type)).write();
                     break;
                 }else{
+                    sleep(15);
                     Log(Log::WARN, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type)).write();
                 }
             }
@@ -325,9 +316,13 @@ void Session::begin(int line_num){
         std::string real_x = "*", real_y = "*", real_z = "*";
         std::string ind_x = "*", ind_y = "*", ind_z = "*";
 
+        sleep(1);
         Actuator::ActuatorResponse res_x = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_X);
+        sleep(1);
         Actuator::ActuatorResponse res_y = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_Y);
+        sleep(1);
         Actuator::ActuatorResponse res_z = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_Z);
+
         if(res_x.errType == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
             real_x = std::to_string(actuator->realPosition_bytesToInt(res_x));
             ind_x  = std::to_string(actuator->indicatedPosition_bytesToInt(res_x));
@@ -344,10 +339,6 @@ void Session::begin(int line_num){
         for(int j = 0; j < number_of_measure; j++){
             Probe::ProbeValue v1 =  p1->getValue();
             Probe::ProbeValue v3 = p3->getValue();
-            time_t time = std::time(nullptr);
-            char s_time[256];
-            std::tm *ptm = std::localtime(&time);
-            strftime(s_time, 256, "%Y-%m-%d %H:%M:%S ", ptm);
 
             std::vector<std::string> vec = magmeshs.at(i);
             std::string x,y,z;
@@ -364,8 +355,8 @@ void Session::begin(int line_num){
                 exit(EXIT_FAILURE);
             }
             std::string line;
-            line += std::string(s_time);
-            line += " " + std::to_string(i) + " ";
+            line += Common::date_time();
+            line += " " + std::to_string(i + 1) + " ";
             line += x + " " + y + " " + z + " ";
             line += real_x + " " + real_y + " " + real_z + " " + ind_x + " " + ind_y + " " + ind_z + " ";
             line += std::to_string(v3.x) + " " + std::to_string(v3.y) + " " + std::to_string(v3.z) + " " + std::to_string(v1.x);

@@ -14,8 +14,8 @@ void SessionManager::startSession(){
     currentSession->begin();
 }
 
-void SessionManager::resumeSession(){
-    currentSession->resume();
+void SessionManager::resumeSession(int i){
+    currentSession->resume(i);
 }
 
 void SessionManager::newSession(std::string name){
@@ -86,6 +86,10 @@ void SessionManager::writeSessionParam(){
 void SessionManager::setTotalCommands(int total){
     QLabel *ql = mw->findChild<QLabel *>("cmd_total", Qt::FindChildrenRecursively);
     ql->setText(QString::number(total));
+}
+
+Session* SessionManager::getCurrentSession(){
+    return currentSession;
 }
 
 void SessionManager::clearSessionParam(){

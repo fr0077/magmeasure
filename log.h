@@ -2,9 +2,9 @@
 #define LOG_H
 
 #include <string>
-#include <ctime>
 #include <iostream>
 #include <fstream>
+#include "common.h"
 
 class Log
 {
@@ -38,11 +38,7 @@ public:
         if(loglevel == VERBOSE)
             logLevel = "VERBOSE";
 
-        char s_time[256];
-        std::tm *ptm = std::localtime(&time);
-        strftime(s_time, 256, "%Y-%m-%d %H:%M:%S", ptm);
-
-        return std::string(s_time) + "\t" + logLevel + "\t" + message + "\n";
+        return Common::date_time() + "\t" + logLevel + "\t" + message + "\n";
     }
 private:
     LogLevel loglevel;

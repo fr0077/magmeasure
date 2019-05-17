@@ -27,6 +27,6 @@ void SessionSelectDialog::on_cancel_clicked()
 
 void SessionSelectDialog::on_ok_clicked()
 {
-    parent->on_session_selected(selected_session);
     close();
+    parent->on_session_selected(selected_session);
 }

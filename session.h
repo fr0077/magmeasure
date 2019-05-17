@@ -6,7 +6,6 @@
 #include <QApplication>
 #include <cstdio>
 #include <cstdlib>
-#include <ctime>
 #include <fstream>
 #include <map>
 #include <list>
@@ -27,6 +26,22 @@ public:
     void pause();
     std::string getName(){
         return name;
+    }
+
+    std::string getMagmeshName(){
+        return magmesh_name;
+    }
+
+    std::string getActMeshName(){
+        return actmesh_name;
+    }
+
+    std::string getCmdName(){
+        return cmds_name;
+    }
+
+    std::string getDatafileName(){
+        return datafile_name;
     }
 
     enum Status{
@@ -107,7 +122,7 @@ public:
 
     void begin();
 
-    void resume();
+    void resume(int i);
 
 private:
     int total_cmd_nums;

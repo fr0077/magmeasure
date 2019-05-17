@@ -30,9 +30,11 @@ SOURCES += \
         mainwindow.cpp \
     session.cpp \
     session_manager.cpp \
+    session_resume_dialog.cpp \
     session_select_dialog.cpp
 
 HEADERS += \
+    common.h \
     group3_one_axis_probe.h \
     group3_probe.h \
         mainwindow.h \
@@ -41,11 +43,13 @@ HEADERS += \
     actuator.h \
     log.h \
     session_manager.h \
+    session_resume_dialog.h \
     session_select_dialog.h \
     thk_actuator.h
 
 FORMS += \
         mainwindow.ui \
+        session_resume_dialog.ui \
         session_select_dialog.ui
 
 # Default rules for deployment.

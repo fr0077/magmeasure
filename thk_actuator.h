@@ -78,9 +78,19 @@ public:
     }
 
     ActuatorResponse getServoStatus(ActuatorAxis axis){
-        ActuatorResponse ret;
-        ret.errType = COMMAND_FAILED;
-        return ret;
+        std::string cmd = "./stage/get_servo_status.py " + Actuator::axis_toString(axis);
+
+        std::vector<std::string> result = getResult(cmd);
+        ActuatorResponse response;
+
+        if(result.at(0) == "TIMEOUT")
+            response.errType = TIMED_OUT;
+        else {
+            response.errType = COMMAND_SUCCESS;
+        }
+
+        response.response = result;
+        return response;
     }
 
     ActuatorResponse getCurrentPosition(ActuatorAxis axis){
@@ -99,6 +109,8 @@ public:
             type = Actuator_Error_Type::COMMAND_SUCCESS;
         }
 
+        ret.errType = type;
+
         return ret;
     }
 
@@ -110,12 +122,6 @@ public:
     int indicatedPosition_bytesToInt(ActuatorResponse response){
         std::string indicatedpos_bytes = response.response.at(7) + response.response.at(6)+response.response.at(5)+response.response.at(4);
         return static_cast<int>(std::stoul(indicatedpos_bytes, nullptr, 16));
-    }
-
-    ActuatorResponse getZeroingCompleted(ActuatorAxis axis){
-        ActuatorResponse ret;
-        ret.errType = COMMAND_FAILED;
-        return ret;
     }
 
     Actuator_Error_Type setSpeed(ActuatorAxis axis, int speed){
@@ -186,6 +192,7 @@ public:
     }
 
     Actuator_Error_Type zero(ActuatorAxis axis){
+
         std::string cmd = "./stage/zero.py " + Actuator::axis_toString(axis);
 
         std::vector<std::string> result = getResult(cmd);
@@ -209,6 +216,7 @@ public:
     }
 
     Actuator_Error_Type servoOn(ActuatorAxis axis){
+
         std::string cmd = "./stage/servo_on.py " + Actuator::axis_toString(axis);
 
         std::vector<std::string> result = getResult(cmd);

@@ -99,9 +99,6 @@ public:
     //アクチュエーターの現在位置を取得する
     virtual ActuatorResponse getCurrentPosition(ActuatorAxis axis) = 0;
 
-    //アクチュエーターが原点復帰完了したかどうか取得
-    virtual ActuatorResponse getZeroingCompleted(ActuatorAxis axis) = 0;
-
     //アクチュエーターの移動速度を設定する
     //単位は0.01mm/s
     virtual Actuator_Error_Type setSpeed(ActuatorAxis axis, int speed) = 0;

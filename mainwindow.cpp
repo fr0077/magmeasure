@@ -49,11 +49,28 @@ void MainWindow::on_session_selected(std::string name){
 
 void MainWindow::on_button_session_start_clicked()
 {
-
     manager->startSession();
 }
 
 void MainWindow::on_resume_clicked()
 {
+    SessionResumeDialog d;
+    d.setParent(this);
+    d.exec();
+}
 
+void MainWindow::on_cmd_num_entered(int num){
+    QMessageBox msgBox(this);
+    std::string msg = manager->getCurrentSession()->getActMeshName() + "の" + std::to_string(num - 1) + "行目の位置にアクチュエーターを動かし、OKをクリックしてください";
+    msgBox.setText(tr(msg.c_str()));
+    msgBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+    int res = msgBox.exec();
+
+    if(res == QMessageBox::No){
+        return;
+    }
+
+    if(res == QMessageBox::Yes){
+        manager->resumeSession(num);
+    }
 }
