@@ -6,7 +6,6 @@
 
 Session::Session(std::string name)
 {
-    boost::property_tree::ptree pt;
     boost::property_tree::read_ini("sessions.ini", pt);
 
     this->name = name;
@@ -35,18 +34,18 @@ Session::Session(std::string name)
     magmesh_name = name + "_magmesh";
     std::string cmd = "./meshgen 1 " + name + " | uniq > " + magmesh_name;
     FILE *fp;
-//    fp = popen(cmd.c_str(), "r");
-//    pclose(fp);
+    //    fp = popen(cmd.c_str(), "r");
+    //    pclose(fp);
 
     actmesh_name = name + "_actmesh";
-    cmd = "./meshgen 2 " + name + " | uniq > " + actmesh_name;
-//    fp = popen(cmd.c_str(), "r");
-//    pclose(fp);
+    //    cmd = "./meshgen 2 " + name + " | uniq > " + actmesh_name;
+    //    fp = popen(cmd.c_str(), "r");
+    //    pclose(fp);
 
     cmds_name = name + "_cmds";
-    cmd = "./mesh2cmd " + name + "_actmesh" + " > " + cmds_name;
-//    fp = popen(cmd.c_str(), "r");
-//    pclose(fp);
+    //    cmd = "./mesh2cmd " + name + "_actmesh" + " > " + cmds_name;
+    //    fp = popen(cmd.c_str(), "r");
+    //    pclose(fp);
 
     cmd = "wc -l " + name + "_cmds";
     fp = popen(cmd.c_str(), "r");
@@ -69,6 +68,44 @@ void Session::resume(int i){
 void Session::begin(){
     Log(Log::LogLevel::INFO, "Session begin");
     begin(1);
+}
+
+void Session::originOverride(std::vector<std::string> cmdtoken){
+    Actuator::ActuatorAxis axis = axismap[cmdtoken.at(1)];
+    double origin_override = getValue<double>(name, "actuator_origin_override_" + Actuator::axis_toString(axis), pt);
+
+    for (;;) {
+        Common::msleep(100);
+
+        if(origin_override == 0){
+            Actuator::Actuator_Error_Type type = actuator->zero(axis);
+
+            if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+                Log(Log::INFO, "Actuator "+ Actuator::axis_toString(axis) + " zero " + Actuator::error_toString(type)).write();
+                break;
+            }else{
+                sleep(15);
+                Log(Log::WARN, "Actuator "+ Actuator::axis_toString(axis) + " zero " + Actuator::error_toString(type)).write();
+            }
+        }else{
+            double d_pos = actuator->realPosition_bytesToInt(actuator->getCurrentPosition(axis));
+            int pos = std::round(d_pos/10);
+            int dist = std::round(origin_override * 1000) - pos;
+            actuator->setDistance(axis, std::abs(dist));
+            Common::msleep(100);
+
+            Actuator::Direction dir;
+            if(dist < 0){
+                dir = Actuator::NEGATIVE;
+            }else{
+                dir = Actuator::POSITIVE;
+            }
+
+            actuator->move(axis, dir);
+        }
+    }
+
+    sleep(sec_wait_after_move);
 }
 
 void Session::begin(int line_num){
@@ -109,13 +146,14 @@ void Session::begin(int line_num){
 
     if(!(magmeshs.size() == actmeshs.size() && actmeshs.size() == cmds.size())){
         Log(Log::FATAL, "Mesh lines doesn't match").write();
+        exit(EXIT_FAILURE);
     }
 
-    Actuator *actuator = new ThkActuator(800,800,800);
+    actuator = new ThkActuator(800,800,800);
     actuator->setSpeed(Actuator::ACTUATOR_AXIS_X, actuator_speed);
     actuator->setSpeed(Actuator::ACTUATOR_AXIS_Y, actuator_speed);
     actuator->setSpeed(Actuator::ACTUATOR_AXIS_Z, actuator_speed);
-    std::map<std::string, Actuator::ActuatorAxis> axismap;
+
 
     if(axis_order == "xyz"){
         axismap["1"] = Actuator::ACTUATOR_AXIS_X;
@@ -148,40 +186,44 @@ void Session::begin(int line_num){
     p3->initialize();
     p1->initialize();
 
+    //    for (;;) {
+    //        Common::msleep(100);
+    //        Actuator::Actuator_Error_Type type = actuator->init(Actuator::ACTUATOR_AXIS_X);
+
+    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " init " + Actuator::error_toString(type)).write();
+    //            break;
+    //        }else{
+    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " init " + Actuator::error_toString(type)).write();
+    //        }
+    //    }
+
+    //    for (;;) {
+    //        Common::msleep(100);
+    //        Actuator::Actuator_Error_Type type = actuator->init(Actuator::ACTUATOR_AXIS_Y);
+
+    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " init " + Actuator::error_toString(type)).write();
+    //            break;
+    //        }else{
+    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " init " + Actuator::error_toString(type)).write();
+    //        }
+    //    }
+
+    //    for (;;) {
+    //        Common::msleep(100);
+    //        Actuator::Actuator_Error_Type type = actuator->init(Actuator::ACTUATOR_AXIS_Z);
+
+    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " init " + Actuator::error_toString(type)).write();
+    //            break;
+    //        }else{
+    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " init " + Actuator::error_toString(type)).write();
+    //        }
+    //    }
+
     for (;;) {
-        Actuator::Actuator_Error_Type type = actuator->init(Actuator::ACTUATOR_AXIS_X);
-
-        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " init " + Actuator::error_toString(type)).write();
-            break;
-        }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " init " + Actuator::error_toString(type)).write();
-        }
-    }
-
-    for (;;) {
-        Actuator::Actuator_Error_Type type = actuator->init(Actuator::ACTUATOR_AXIS_Y);
-
-        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " init " + Actuator::error_toString(type)).write();
-            break;
-        }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " init " + Actuator::error_toString(type)).write();
-        }
-    }
-
-    for (;;) {
-        Actuator::Actuator_Error_Type type = actuator->init(Actuator::ACTUATOR_AXIS_Z);
-
-        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " init " + Actuator::error_toString(type)).write();
-            break;
-        }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " init " + Actuator::error_toString(type)).write();
-        }
-    }
-
-    for (;;) {
+        Common::msleep(100);
         Actuator::Actuator_Error_Type type = actuator->resetAlarm(Actuator::ACTUATOR_AXIS_X);
 
         if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
@@ -192,18 +234,20 @@ void Session::begin(int line_num){
         }
     }
 
-    for (;;) {
-        Actuator::Actuator_Error_Type type = actuator->resetAlarm(Actuator::ACTUATOR_AXIS_Y);
+    //    for (;;) {
+    //        Common::msleep(100);
+    //        Actuator::Actuator_Error_Type type = actuator->resetAlarm(Actuator::ACTUATOR_AXIS_Y);
 
-        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " resetAlarm " + Actuator::error_toString(type)).write();
-            break;
-        }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " resetAlarm " + Actuator::error_toString(type)).write();
-        }
-    }
+    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " resetAlarm " + Actuator::error_toString(type)).write();
+    //            break;
+    //        }else{
+    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " resetAlarm " + Actuator::error_toString(type)).write();
+    //        }
+    //    }
 
     for (;;) {
+        Common::msleep(100);
         Actuator::Actuator_Error_Type type = actuator->resetAlarm(Actuator::ACTUATOR_AXIS_Z);
 
         if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
@@ -214,38 +258,41 @@ void Session::begin(int line_num){
         }
     }
 
-    for (;;) {
-        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_X);
+    //    for (;;) {
+    //        Common::msleep(100);
+    //        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_X);
 
-        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " servoOn " + Actuator::error_toString(type)).write();
-            break;
-        }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " servoOn " + Actuator::error_toString(type)).write();
-        }
-    }
+    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " servoOn " + Actuator::error_toString(type)).write();
+    //            break;
+    //        }else{
+    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " servoOn " + Actuator::error_toString(type)).write();
+    //        }
+    //    }
 
-//    for (;;) {
-//        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Y);
+    //    for (;;) {
+    //        Common::msleep(100);
+    //        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Y);
 
-//        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-//            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
-//            break;
-//        }else{
-//            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
-//        }
-//    }
+    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
+    //            break;
+    //        }else{
+    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
+    //        }
+    //    }
 
-    for (;;) {
-        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Z);
+    //    for (;;) {
+    //        Common::msleep(100);
+    //        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Z);
 
-        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " servoOn " + Actuator::error_toString(type)).write();
-            break;
-        }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " servoOn " + Actuator::error_toString(type)).write();
-        }
-    }
+    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " servoOn " + Actuator::error_toString(type)).write();
+    //            break;
+    //        }else{
+    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " servoOn " + Actuator::error_toString(type)).write();
+    //        }
+    //    }
 
     std::ofstream data(datafile_name, std::ios::app);
 
@@ -253,19 +300,7 @@ void Session::begin(int line_num){
     for(int i = line_num - 1; i < cmds.size(); i++){
         std::vector<std::string> cmdtoken = cmds.at(i);
         if(cmdtoken.at(0) == "#"){
-            for (;;) {
-                Actuator::Actuator_Error_Type type = actuator->zero(axismap[cmdtoken.at(1)]);
-
-                if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-                    Log(Log::INFO, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type)).write();
-                    break;
-                }else{
-                    sleep(15);
-                    Log(Log::WARN, "Actuator "+ Actuator::axis_toString(axismap[cmdtoken.at(1)]) + " zero " + Actuator::error_toString(type)).write();
-                }
-            }
-
-            sleep(sec_wait_after_move);
+            originOverride(cmdtoken);
             continue;
 
         }else{
@@ -316,11 +351,11 @@ void Session::begin(int line_num){
         std::string real_x = "*", real_y = "*", real_z = "*";
         std::string ind_x = "*", ind_y = "*", ind_z = "*";
 
-        sleep(1);
+        Common::msleep(100);
         Actuator::ActuatorResponse res_x = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_X);
-        sleep(1);
+        Common::msleep(100);
         Actuator::ActuatorResponse res_y = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_Y);
-        sleep(1);
+        Common::msleep(100);
         Actuator::ActuatorResponse res_z = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_Z);
 
         if(res_x.errType == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
@@ -361,7 +396,7 @@ void Session::begin(int line_num){
             line += real_x + " " + real_y + " " + real_z + " " + ind_x + " " + ind_y + " " + ind_z + " ";
             line += std::to_string(v3.x) + " " + std::to_string(v3.y) + " " + std::to_string(v3.z) + " " + std::to_string(v1.x);
             data <<  line << std::endl;
-            usleep(1000 * msec_measure_time);
+            Common::msleep(msec_measure_time);
         }
     }
 }

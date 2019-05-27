@@ -54,12 +54,17 @@ void MainWindow::on_button_session_start_clicked()
 
 void MainWindow::on_resume_clicked()
 {
+    if(manager->getCurrentSession() == nullptr)
+        return;
     SessionResumeDialog d;
     d.setParent(this);
     d.exec();
 }
 
 void MainWindow::on_cmd_num_entered(int num){
+    if(manager->getCurrentSession() == nullptr)
+        return;
+
     QMessageBox msgBox(this);
     std::string msg = manager->getCurrentSession()->getActMeshName() + "の" + std::to_string(num - 1) + "行目の位置にアクチュエーターを動かし、OKをクリックしてください";
     msgBox.setText(tr(msg.c_str()));

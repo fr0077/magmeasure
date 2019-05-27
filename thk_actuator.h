@@ -1,3 +1,6 @@
+#ifndef THK_ACTUATOR_H
+#define THK_ACTUATOR_H
+
 #include "actuator.h"
 #include <boost/algorithm/string.hpp>
 #include <QDebug>
@@ -237,3 +240,5 @@ public:
         return dist[axis] / 1000.0 / speed[axis];
     }
 };
+
+#endif

@@ -11,11 +11,13 @@ SessionManager::~SessionManager(){
 }
 
 void SessionManager::startSession(){
-    currentSession->begin();
+    if(currentSession != nullptr)
+        currentSession->begin();
 }
 
 void SessionManager::resumeSession(int i){
-    currentSession->resume(i);
+    if(currentSession != nullptr)
+        currentSession->resume(i);
 }
 
 void SessionManager::newSession(std::string name){

@@ -11,6 +11,10 @@
 
 class Common{
 public:
+    static void msleep(unsigned int ms){
+        usleep(ms*1000);
+    }
+
     static std::string time_str()
     {
         const boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();

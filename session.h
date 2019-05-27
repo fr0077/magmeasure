@@ -13,6 +13,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/optional.hpp>
+#include "thk_actuator.h"
+#include <cmath>
 #include <boost/algorithm/string.hpp>
 
 class SessionManager;
@@ -125,6 +127,8 @@ public:
     void resume(int i);
 
 private:
+    std::map<std::string, Actuator::ActuatorAxis> axismap;
+
     int total_cmd_nums;
 
     void begin(int i);
@@ -134,6 +138,8 @@ private:
     Status checkStatus(){
         return READY;
     }
+
+    void originOverride(std::vector<std::string> cmdtoken);
 
     std::string name;
     double xmin;
@@ -156,6 +162,7 @@ private:
     int actuator_speed;
 
     std::string axis_order;
+    Actuator *actuator;
 
     double actuator_origin_x;
     double actuator_origin_y;
@@ -164,12 +171,14 @@ private:
     double deltax;
     double deltay;
     double deltaz;
+    boost::property_tree::ptree pt;
 
     template<typename T>
     T getValue(std::string sessionName, std::string propertyName, boost::property_tree::ptree pt){
         if (boost::optional<T> value = pt.get_optional<T>(sessionName + "." + propertyName)) {
             return value.get();
         } else {
+            exit(EXIT_FAILURE);
         }
     }
 };
