@@ -283,7 +283,7 @@ void Session::begin(int line_num){
         }
 
         for(int j = 0; j < number_of_measure; j++){
-            Probe::ProbeValue v1 =  p1->getValue();
+            Probe::ProbeValue v1 = p1->getValue();
             Probe::ProbeValue v3 = p3->getValue();
 
             std::vector<std::string> vec = magmeshs.at(i);

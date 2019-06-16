@@ -16,17 +16,27 @@ class Group3OneAxisProbe : public Probe{
         FILE *fp = popen(cmd.c_str(), "r");
         char result[30];
         std::string str;
+
+        fgets(result, sizeof(result), fp);
+        str += result;
+        pclose(fp);
+
         Probe::ProbeValue value;
+        if(str.find("timed out") != std::string::npos){
+            value.status = ProbeErrorType::TIMED_OUT;
+            return value;
+        }
 
-        while (fgets(result, sizeof(result), fp))
-            str += result;
+        if(str.find("Network") != std::string::npos){
+            value.status = ProbeErrorType::COMMAND_FAILED;
+            return value;
+        }
 
-        qDebug() << QString::fromStdString(str);
         value.status = ProbeErrorType::COMMAND_SUCCESS;
 
-        value.x = 4;
-        value.y = 0;
-        value.z = 0;
+        value.x = std::stod(str);
+        value.y = std::numeric_limits<double>::quiet_NaN();
+        value.z = std::numeric_limits<double>::quiet_NaN();
 
         return value;
     }

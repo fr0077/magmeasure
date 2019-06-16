@@ -16,12 +16,7 @@ class Group3Probe : public Probe{
         Probe::ProbeValue value;
         value.status = ProbeErrorType::COMMAND_SUCCESS;
 
-        value.x = 0;
-        value.y = 0;
-        value.z = 0;
-        return value;
-
-        std::string cmd = "./dummy.sh";
+        std::string cmd = "./get_3axis.sh";
         FILE *fp = popen(cmd.c_str(), "r");
         char result[30];
         std::string str;

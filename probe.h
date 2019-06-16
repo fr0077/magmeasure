@@ -4,6 +4,7 @@
 #include "log.h"
 #include <iostream>
 #include <fstream>
+#include <limits>
 
 class Probe
 {
