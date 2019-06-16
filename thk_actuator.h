@@ -102,6 +102,7 @@ public:
         std::string cmd = "./stage/get_current_position.py " + Actuator::axis_toString(axis);
 
         ret.response = getResult(cmd);
+
         Actuator_Error_Type type;
 
         if(ret.response.at(0) == "TIMEOUT"){

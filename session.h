@@ -98,10 +98,6 @@ public:
         return number_of_measure;
     }
 
-    int getWaitTime(){
-        return sec_wait_after_move;
-    }
-
     int getSpeed(){
         return actuator_speed;
     }
@@ -156,7 +152,10 @@ private:
     std::string logfile_name;
 
     int msec_measure_time;
-    int sec_wait_after_move;
+    int sec_wait_after_move_1;
+    int sec_wait_after_move_2;
+    int sec_wait_after_move_3;
+    int sec_wait_after_origin;
     int number_of_measure;
 
     int actuator_speed;

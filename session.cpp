@@ -27,25 +27,28 @@ Session::Session(std::string name)
     axis_order = getValue<std::string>(name, "axis_order", pt);
 
     msec_measure_time = getValue<int>(name, "msec_measure_time", pt);
-    sec_wait_after_move = getValue<int>(name, "sec_wait_after_move", pt);
+    sec_wait_after_move_1 = getValue<int>(name, "sec_wait_after_move_1", pt);
+    sec_wait_after_move_2 = getValue<int>(name, "sec_wait_after_move_2", pt);
+    sec_wait_after_move_3 = getValue<int>(name, "sec_wait_after_move_3", pt);
+    sec_wait_after_origin = getValue<int>(name, "sec_wait_after_origin", pt);
     number_of_measure = getValue<int>(name, "number_of_measure", pt);
     actuator_speed = getValue<int>(name, "actuator_speed", pt);
 
     magmesh_name = name + "_magmesh";
     std::string cmd = "./meshgen 1 " + name + " | uniq > " + magmesh_name;
     FILE *fp;
-    //    fp = popen(cmd.c_str(), "r");
-    //    pclose(fp);
+    fp = popen(cmd.c_str(), "r");
+    pclose(fp);
 
     actmesh_name = name + "_actmesh";
-    //    cmd = "./meshgen 2 " + name + " | uniq > " + actmesh_name;
-    //    fp = popen(cmd.c_str(), "r");
-    //    pclose(fp);
+    cmd = "./meshgen 2 " + name + " | uniq > " + actmesh_name;
+    fp = popen(cmd.c_str(), "r");
+    pclose(fp);
 
     cmds_name = name + "_cmds";
-    //    cmd = "./mesh2cmd " + name + "_actmesh" + " > " + cmds_name;
-    //    fp = popen(cmd.c_str(), "r");
-    //    pclose(fp);
+    cmd = "./mesh2cmd " + name + " > " + cmds_name;
+    fp = popen(cmd.c_str(), "r");
+    pclose(fp);
 
     cmd = "wc -l " + name + "_cmds";
     fp = popen(cmd.c_str(), "r");
@@ -88,11 +91,19 @@ void Session::originOverride(std::vector<std::string> cmdtoken){
                 Log(Log::WARN, "Actuator "+ Actuator::axis_toString(axis) + " zero " + Actuator::error_toString(type)).write();
             }
         }else{
+            Common::msleep(100);
+
             double d_pos = actuator->realPosition_bytesToInt(actuator->getCurrentPosition(axis));
+            if(axis == Actuator::ACTUATOR_AXIS_Y){
+                d_pos = -d_pos;
+            }
             int pos = std::round(d_pos/10);
             int dist = std::round(origin_override * 1000) - pos;
-            actuator->setDistance(axis, std::abs(dist));
+            Log(Log::VERBOSE, "Actuator "+ Actuator::axis_toString(axis) + " zero(override) " + std::to_string(pos)).write();
+            Log(Log::VERBOSE, "Actuator "+ Actuator::axis_toString(axis) + " zero(override) " + std::to_string(dist)).write();
+
             Common::msleep(100);
+            actuator->setDistance(axis, std::abs(dist));
 
             Actuator::Direction dir;
             if(dist < 0){
@@ -101,11 +112,19 @@ void Session::originOverride(std::vector<std::string> cmdtoken){
                 dir = Actuator::POSITIVE;
             }
 
-            actuator->move(axis, dir);
+            Common::msleep(100);
+            Actuator::Actuator_Error_Type type = actuator->move(axis, dir);
+            if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
+                Log(Log::INFO, "Actuator "+ Actuator::axis_toString(axis) + " zero(override) " + Actuator::error_toString(type)).write();
+                break;
+            }else{
+                sleep(1);
+                Log(Log::WARN, "Actuator "+ Actuator::axis_toString(axis) + " zero(override) " + Actuator::error_toString(type)).write();
+            }
         }
     }
 
-    sleep(sec_wait_after_move);
+    sleep(sec_wait_after_origin);
 }
 
 void Session::begin(int line_num){
@@ -186,113 +205,6 @@ void Session::begin(int line_num){
     p3->initialize();
     p1->initialize();
 
-    //    for (;;) {
-    //        Common::msleep(100);
-    //        Actuator::Actuator_Error_Type type = actuator->init(Actuator::ACTUATOR_AXIS_X);
-
-    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " init " + Actuator::error_toString(type)).write();
-    //            break;
-    //        }else{
-    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " init " + Actuator::error_toString(type)).write();
-    //        }
-    //    }
-
-    //    for (;;) {
-    //        Common::msleep(100);
-    //        Actuator::Actuator_Error_Type type = actuator->init(Actuator::ACTUATOR_AXIS_Y);
-
-    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " init " + Actuator::error_toString(type)).write();
-    //            break;
-    //        }else{
-    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " init " + Actuator::error_toString(type)).write();
-    //        }
-    //    }
-
-    //    for (;;) {
-    //        Common::msleep(100);
-    //        Actuator::Actuator_Error_Type type = actuator->init(Actuator::ACTUATOR_AXIS_Z);
-
-    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " init " + Actuator::error_toString(type)).write();
-    //            break;
-    //        }else{
-    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " init " + Actuator::error_toString(type)).write();
-    //        }
-    //    }
-
-    for (;;) {
-        Common::msleep(100);
-        Actuator::Actuator_Error_Type type = actuator->resetAlarm(Actuator::ACTUATOR_AXIS_X);
-
-        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " resetAlarm " + Actuator::error_toString(type)).write();
-            break;
-        }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " resetAlarm " + Actuator::error_toString(type)).write();
-        }
-    }
-
-    //    for (;;) {
-    //        Common::msleep(100);
-    //        Actuator::Actuator_Error_Type type = actuator->resetAlarm(Actuator::ACTUATOR_AXIS_Y);
-
-    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " resetAlarm " + Actuator::error_toString(type)).write();
-    //            break;
-    //        }else{
-    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " resetAlarm " + Actuator::error_toString(type)).write();
-    //        }
-    //    }
-
-    for (;;) {
-        Common::msleep(100);
-        Actuator::Actuator_Error_Type type = actuator->resetAlarm(Actuator::ACTUATOR_AXIS_Z);
-
-        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " resetAlarm " + Actuator::error_toString(type)).write();
-            break;
-        }else{
-            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " resetAlarm " + Actuator::error_toString(type)).write();
-        }
-    }
-
-    //    for (;;) {
-    //        Common::msleep(100);
-    //        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_X);
-
-    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " servoOn " + Actuator::error_toString(type)).write();
-    //            break;
-    //        }else{
-    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_X) + " servoOn " + Actuator::error_toString(type)).write();
-    //        }
-    //    }
-
-    //    for (;;) {
-    //        Common::msleep(100);
-    //        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Y);
-
-    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
-    //            break;
-    //        }else{
-    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Y) + " servoOn " + Actuator::error_toString(type)).write();
-    //        }
-    //    }
-
-    //    for (;;) {
-    //        Common::msleep(100);
-    //        Actuator::Actuator_Error_Type type = actuator->servoOn(Actuator::ACTUATOR_AXIS_Z);
-
-    //        if(type == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-    //            Log(Log::INFO, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " servoOn " + Actuator::error_toString(type)).write();
-    //            break;
-    //        }else{
-    //            Log(Log::WARN, "Actuator "+ Actuator::axis_toString(Actuator::ACTUATOR_AXIS_Z) + " servoOn " + Actuator::error_toString(type)).write();
-    //        }
-    //    }
 
     std::ofstream data(datafile_name, std::ios::app);
 
@@ -331,21 +243,22 @@ void Session::begin(int line_num){
                 actuator->setDistance(axismap["3"], dist_3*1000);
                 actuator->move(axismap["3"], dir_3);
                 Log(Log::INFO, "Actuator " + Actuator::axis_toString(axismap["3"]) + " moved " + std::to_string(dist_3)).write();
+                sleep(sec_wait_after_move_3);
             }
 
             if(dist_2 != 0){
                 actuator->setDistance(axismap["2"], dist_2*1000);
                 actuator->move(axismap["2"], dir_2);
                 Log(Log::INFO, "Actuator " + Actuator::axis_toString(axismap["2"]) + " moved " + std::to_string(dist_2)).write();
+                sleep(sec_wait_after_move_2);
             }
 
             if(dist_1 != 0){
                 actuator->setDistance(axismap["1"], dist_1*1000);
                 actuator->move(axismap["1"], dir_1);
                 Log(Log::INFO, "Actuator " + Actuator::axis_toString(axismap["1"]) + " moved " + std::to_string(dist_1)).write();
+                sleep(sec_wait_after_move_1);
             }
-
-            sleep(sec_wait_after_move);
         }
 
         std::string real_x = "*", real_y = "*", real_z = "*";
@@ -353,9 +266,7 @@ void Session::begin(int line_num){
 
         Common::msleep(100);
         Actuator::ActuatorResponse res_x = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_X);
-        Common::msleep(100);
         Actuator::ActuatorResponse res_y = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_Y);
-        Common::msleep(100);
         Actuator::ActuatorResponse res_z = actuator->getCurrentPosition(Actuator::ACTUATOR_AXIS_Z);
 
         if(res_x.errType == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
@@ -363,8 +274,8 @@ void Session::begin(int line_num){
             ind_x  = std::to_string(actuator->indicatedPosition_bytesToInt(res_x));
         }
         if(res_y.errType == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
-            real_y = std::to_string(actuator->realPosition_bytesToInt(res_y));
-            ind_y  = std::to_string(actuator->indicatedPosition_bytesToInt(res_y));
+            real_y = std::to_string(-actuator->realPosition_bytesToInt(res_y));
+            ind_y  = std::to_string(-actuator->indicatedPosition_bytesToInt(res_y));
         }
         if(res_z.errType == Actuator::Actuator_Error_Type::COMMAND_SUCCESS){
             real_z = std::to_string(actuator->realPosition_bytesToInt(res_z));
@@ -391,7 +302,7 @@ void Session::begin(int line_num){
             }
             std::string line;
             line += Common::date_time();
-            line += " " + std::to_string(i + 1) + " ";
+            line += " " + std::to_string(i + 1) + " " + std::to_string(j + 1) + " ";
             line += x + " " + y + " " + z + " ";
             line += real_x + " " + real_y + " " + real_z + " " + ind_x + " " + ind_y + " " + ind_z + " ";
             line += std::to_string(v3.x) + " " + std::to_string(v3.y) + " " + std::to_string(v3.z) + " " + std::to_string(v1.x);

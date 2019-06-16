@@ -107,7 +107,7 @@
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background: lightgreen</string>
+            <string notr="true">background: darkgreen</string>
            </property>
            <property name="text">
             <string>セッション</string>
@@ -589,34 +589,7 @@
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_15">
-           <item>
-            <widget class="QLabel" name="label_24">
-             <property name="maximumSize">
-              <size>
-               <width>70</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>待機時間</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="wait_time">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <layout class="QHBoxLayout" name="horizontalLayout_15"/>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_16">
