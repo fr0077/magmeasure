@@ -185,6 +185,7 @@ public:
 
         if(result.at(0) == "01"){
             type = COMMAND_SUCCESS;
+            qDebug() << estimateTime(axis) + 1;
             sleep((unsigned int)(estimateTime(axis) + 1));
         }else if(result.at(0) == "00"){
             type = COMMAND_FAILED;
@@ -238,7 +239,7 @@ public:
     }
 
     double estimateTime(ActuatorAxis axis){
-        return dist[axis] / 1000.0 / speed[axis];
+        return std::abs(dist[axis]) / 1000.0 / speed[axis];
     }
 };
 

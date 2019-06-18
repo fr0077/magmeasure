@@ -22,7 +22,7 @@ class Group3OneAxisProbe : public Probe{
         pclose(fp);
 
         Probe::ProbeValue value;
-        if(str.find("timed out") != std::string::npos){
+        if(str.find("timed") != std::string::npos){
             value.status = ProbeErrorType::TIMED_OUT;
             return value;
         }

@@ -50,12 +50,13 @@ Session::Session(std::string name)
     fp = popen(cmd.c_str(), "r");
     pclose(fp);
 
-    cmd = "wc -l " + name + "_cmds";
+    cmd = "wc -l " + name + "_cmds | tr -s ' ' | cut -f 2 -d ' '";
     fp = popen(cmd.c_str(), "r");
     char result[30];
     std::string str;
     while (fgets(result, sizeof(result), fp))
         str += result;
+    qDebug() << QString::fromStdString(str);
     pclose(fp);
     total_cmd_nums = std::atoi(result);
 
